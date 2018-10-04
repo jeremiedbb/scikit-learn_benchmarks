@@ -25,18 +25,19 @@ def _sparse_dataset():
 
 class Kmeans(Benchmark):
     """
-    Benchmarks for KMeans iterations.
+    Benchmarks for KMeans.
     """
-    # params = (representation, algorithm, n_jobs)
-    param_names = ['params']
-    params = ([('dense', 'full', 1),
-               ('dense', 'elkan', 1),
-               ('sparse', 'full', 1)],)
+    # params = (representation, algorithm)
+    param_names = ['params'] + Benchmark.param_names
+    params = ([('dense', 'full'),
+               ('dense', 'elkan'),
+               ('sparse', 'full')],) + Benchmark.params
 
-    def setup(self, params):
+    def setup(self, params, *common):
         representation = params[0]
         algo = params[1]
-        n_jobs = params[2]
+
+        n_jobs = common[0]
 
         if representation is 'sparse':
             self.X, self.n_clusters = _sparse_dataset()
@@ -46,45 +47,45 @@ class Kmeans(Benchmark):
         self.x_squared_norms = row_norms(self.X, squared=True)
         self.rng = np.random.RandomState(0)
 
-        self.common_params = {'n_clusters': self.n_clusters,
+        self.kmeans_params = {'n_clusters': self.n_clusters,
                               'algorithm': algo,
                               'n_init': 1,
                               'n_jobs': n_jobs,
                               'random_state': self.rng}
 
-    def time_iterations(self, params):
+    def time_iterations(self, *args):
         kmeans = KMeans(init='random', max_iter=10, tol=0,
-                        **self.common_params)
+                        **self.kmeans_params)
         kmeans.fit(self.X)
 
-    def peakmem_iterations(self, params):
+    def peakmem_iterations(self, *args):
         kmeans = KMeans(init='random', max_iter=10, tol=0,
-                        **self.common_params)
+                        **self.kmeans_params)
         kmeans.fit(self.X)
 
-    def track_iterations(self, params):
+    def track_iterations(self, *args):
         kmeans = KMeans(init='random', max_iter=10, tol=0,
-                        **self.common_params)
+                        **self.kmeans_params)
         kmeans.fit(self.X)
         return kmeans.n_iter_
 
-    def time_convergence(self, params):
-        kmeans = KMeans(**self.common_params)
+    def time_convergence(self, *args):
+        kmeans = KMeans(**self.kmeans_params)
         kmeans.fit(self.X)
 
-    def peakmem_convergence(self, params):
-        kmeans = KMeans(**self.common_params)
+    def peakmem_convergence(self, *args):
+        kmeans = KMeans(**self.kmeans_params)
         kmeans.fit(self.X)
 
-    def track_convergence(self, params):
-        kmeans = KMeans(**self.common_params)
+    def track_convergence(self, *args):
+        kmeans = KMeans(**self.kmeans_params)
         kmeans.fit(self.X)
         return kmeans.n_iter_
 
-    def time_init(self, params):
+    def time_init(self, *args):
         _k_init(self.X, self.n_clusters, self.x_squared_norms,
                 random_state=self.rng)
 
-    def peakmem_init(self, params):
+    def peakmem_init(self, *args):
         _k_init(self.X, self.n_clusters, self.x_squared_norms,
                 random_state=self.rng)
