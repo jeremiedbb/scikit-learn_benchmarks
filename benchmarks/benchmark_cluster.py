@@ -1,34 +1,90 @@
 import numpy as np
-import scipy.sparse as sp
+
+from .common import Benchmark
 
 from sklearn.cluster import KMeans
+from sklearn.cluster.k_means_ import _k_init
+from sklearn.datasets import load_sample_image
+from sklearn.datasets import fetch_20newsgroups_vectorized
+from sklearn.utils.extmath import row_norms
 
 
-class KmeansBenchmarks:
+def _dense_dataset():
+    img = load_sample_image("china.jpg")
+    X = np.array(img, dtype=np.float64) / 255
+    X = X.reshape((-1, 3))
+    n_clusters = 64
+    return X, n_clusters
+
+
+def _sparse_dataset():
+    X, y = fetch_20newsgroups_vectorized(return_X_y=True)
+    n_clusters = len(set(y))
+    return X, n_clusters
+
+
+class Kmeans(Benchmark):
     """
-    Benchmarks for KMeans.
+    Benchmarks for KMeans iterations.
     """
-    # size = (n_samples, n_clusters, n_features)
+    # params = (representation, algorithm, n_jobs)
     param_names = ['params']
-    params = ([('dense', 10000, 100, 3, 'full'),
-               ('sparse', 10000, 100, 100, 'full'),
-               ('dense', 10000, 100, 3, 'elkan')],)
+    params = ([('dense', 'full', 1),
+               ('dense', 'elkan', 1),
+               ('sparse', 'full', 1)],)
 
     def setup(self, params):
-        self.issparse = False if params[0] is 'dense' else True
-        self.n_samples = params[1]
-        self.n_clusters = params[2]
-        self.n_features = params[3]
-        self.algo = params[4]
+        representation = params[0]
+        algo = params[1]
+        n_jobs = params[2]
 
-        if self.issparse:
-            self.X = sp.random(self.n_samples, self.n_features, density=0.05,
-                               format='csr')
+        if representation is 'sparse':
+            self.X, self.n_clusters = _sparse_dataset()
         else:
-            self.X = np.random.random_sample((self.n_samples, self.n_features))
+            self.X, self.n_clusters = _dense_dataset()
 
-        self.kmeans = KMeans(n_clusters=self.n_clusters, algorithm=self.algo,
-                             init='random', max_iter=20, n_init=1, n_jobs=1)
+        self.x_squared_norms = row_norms(self.X, squared=True)
+        self.rng = np.random.RandomState(0)
+
+        self.common_params = {'n_clusters': self.n_clusters,
+                              'algorithm': algo,
+                              'n_init': 1,
+                              'n_jobs': n_jobs,
+                              'random_state': self.rng}
 
     def time_iterations(self, params):
-        self.kmeans.fit(self.X)
+        kmeans = KMeans(init='random', max_iter=10, tol=0,
+                        **self.common_params)
+        kmeans.fit(self.X)
+
+    def peakmem_iterations(self, params):
+        kmeans = KMeans(init='random', max_iter=10, tol=0,
+                        **self.common_params)
+        kmeans.fit(self.X)
+
+    def track_iterations(self, params):
+        kmeans = KMeans(init='random', max_iter=10, tol=0,
+                        **self.common_params)
+        kmeans.fit(self.X)
+        return kmeans.n_iter_
+
+    def time_convergence(self, params):
+        kmeans = KMeans(**self.common_params)
+        kmeans.fit(self.X)
+
+    def peakmem_convergence(self, params):
+        kmeans = KMeans(**self.common_params)
+        kmeans.fit(self.X)
+
+    def track_convergence(self, params):
+        kmeans = KMeans(**self.common_params)
+        kmeans.fit(self.X)
+        return kmeans.n_iter_
+
+    def time_init(self, params):
+        _k_init(self.X, self.n_clusters, self.x_squared_norms,
+                random_state=self.rng)
+
+    def peakmem_init(self, params):
+        _k_init(self.X, self.n_clusters, self.x_squared_norms,
+                random_state=self.rng)

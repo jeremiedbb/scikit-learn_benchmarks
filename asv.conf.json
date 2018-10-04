@@ -11,7 +11,8 @@
 
     // The URL or local path of the source code repository for the
     // project being benchmarked
-    "repo": "https://github.com/scikit-learn/scikit-learn.git",
+    // "repo": "https://github.com/scikit-learn/scikit-learn.git",
+    "repo": "../scikit-learn",
 
     // The Python project's subdirectory in your repo.  If missing or
     // the empty string, the project is assumed to be located at the root
@@ -55,7 +56,7 @@
 
     // The Pythons you'd like to test against.  If not provided, defaults
     // to the current version of Python used to run `asv`.
-    "pythons": ["3.5"],
+    "pythons": ["3.6"],
 
     // The list of conda channel names to be searched for benchmark
     // dependency packages in the specified order
@@ -72,9 +73,10 @@
     // followed by the pip installed packages).
     //
     "matrix": {
-        "numpy": ["1.11"],
-	    "scipy": ["0.18"],
-        "cython": ["0.24"]
+        "numpy": ["1.14"],
+	    "scipy": ["1.1"],
+        "cython": ["0.28"],
+        "pillow": ["5.3"]
     },
 
     // Combinations of libraries/python versions can be excluded/included
