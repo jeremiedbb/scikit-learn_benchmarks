@@ -5,6 +5,7 @@ from joblib import Memory
 from sklearn.decomposition import TruncatedSVD
 from sklearn.datasets import (load_sample_image, fetch_20newsgroups_vectorized,
                               fetch_openml, load_digits)
+from sklearn.preprocessing import StandardScaler, MaxAbsScaler
 
 
 # memory location for caching datasets
@@ -23,6 +24,7 @@ def _china_dataset(dtype=np.float32):
 def _20newsgroups_highdim_dataset(dtype=np.float32):
     X, y = fetch_20newsgroups_vectorized(return_X_y=True)
     X = X.astype(dtype, copy=False)
+    X = MaxAbsScaler().fit_transform(X)
     return X, y
 
 
@@ -30,6 +32,7 @@ def _20newsgroups_highdim_dataset(dtype=np.float32):
 def _20newsgroups_lowdim_dataset(dtype=np.float32):
     X, y = fetch_20newsgroups_vectorized(return_X_y=True)
     X = X.astype(dtype, copy=False)
+    X = MaxAbsScaler().fit_transform(X)
     svd = TruncatedSVD(n_components=10)
     X = svd.fit_transform(X)
     return X, y
@@ -39,6 +42,7 @@ def _20newsgroups_lowdim_dataset(dtype=np.float32):
 def _mnist_dataset(dtype=np.float32):
     X, y = fetch_openml('mnist_784', version=1, return_X_y=True)
     X = X.astype(dtype, copy=False)
+    X = StandardScaler().fit_transform(X)
     return X, y
 
 
@@ -46,4 +50,5 @@ def _mnist_dataset(dtype=np.float32):
 def _digits_dataset(dtype=np.float32):
     X, y = load_digits(return_X_y=True)
     X = X.astype(dtype, copy=False)
+    X = StandardScaler().fit_transform(X)
     return X, y
