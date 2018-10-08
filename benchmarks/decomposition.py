@@ -1,4 +1,4 @@
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, DictionaryLearning
 
 from .common import Benchmark
 from .datasets import _mnist_dataset
@@ -30,3 +30,10 @@ class PCA_(Benchmark):
     def peakmem_fit(self, *args):
         pca = PCA(**self.pca_params)
         pca.fit(self.X)
+
+
+class DictionaryLearning_(Benchmark):
+    """
+    Benchmarks for DictionnaryLearning.
+    """
+    pass
