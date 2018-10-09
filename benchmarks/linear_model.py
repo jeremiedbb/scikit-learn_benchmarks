@@ -1,10 +1,8 @@
 from sklearn.linear_model import LogisticRegression, Ridge, ElasticNet, Lasso
-
 from .common import Benchmark
 from .datasets import (_20newsgroups_highdim_dataset,
                        _20newsgroups_lowdim_dataset,
-                       _synth_regression_lowdim_dataset,
-                       _synth_regression_highdim_dataset)
+                       _synth_regression_dataset)
 
 
 class LogisticRegression_bench(Benchmark):
@@ -37,7 +35,6 @@ class LogisticRegression_bench(Benchmark):
         self.lr_params.update({'solver': solver,
                                'multi_class': 'multinomial',
                                'tol': 0.01,
-                               'max_iter': 300,
                                'n_jobs': n_jobs,
                                'random_state': 0})
 
@@ -67,10 +64,8 @@ class Ridge_bench(Benchmark):
     def setup(self, params):
         representation = params[0]
 
-        if representation is 'sparse':
-            self.X, self.y = _synth_regression_highdim_dataset()
-        else:
-            self.X, self.y = _synth_regression_lowdim_dataset()
+        self.X, self.y = _synth_regression_dataset(5000, 100000,
+                                                   representation)
 
         self.ridge_params = {'solver': 'lsqr',
                              'fit_intercept': False,
@@ -100,10 +95,7 @@ class ElasticNet_bench(Benchmark):
         representation = params[0]
         precompute = params[1]
 
-        if representation is 'sparse':
-            self.X, self.y = _synth_regression_highdim_dataset()
-        else:
-            self.X, self.y = _synth_regression_lowdim_dataset()
+        self.X, self.y = _synth_regression_dataset(1000, 10000, representation)
 
         self.en_params = {'precompute': precompute,
                           'random_state': 0}
@@ -132,10 +124,7 @@ class Lasso_bench(Benchmark):
         representation = params[0]
         precompute = params[1]
 
-        if representation is 'sparse':
-            self.X, self.y = _synth_regression_highdim_dataset()
-        else:
-            self.X, self.y = _synth_regression_lowdim_dataset()
+        self.X, self.y = _synth_regression_dataset(1000, 10000, representation)
 
         self.lasso_params = {'precompute': precompute,
                              'random_state': 0}
