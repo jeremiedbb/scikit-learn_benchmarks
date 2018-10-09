@@ -5,7 +5,7 @@ from .datasets import (_20newsgroups_highdim_dataset,
                        _20newsgroups_lowdim_dataset)
 
 
-class RandomForestClassifier_(Benchmark):
+class RandomForestClassifier_bench(Benchmark):
     """
     Benchmarks for RandomForestClassifier.
     """
@@ -39,7 +39,7 @@ class RandomForestClassifier_(Benchmark):
         rf.fit(self.X, self.y)
 
 
-class GradientBoostingClassifier_(Benchmark):
+class GradientBoostingClassifier_bench(Benchmark):
     """
     Benchmarks for GradientBoostingClassifier.
     """

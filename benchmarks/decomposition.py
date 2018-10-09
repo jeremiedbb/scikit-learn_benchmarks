@@ -4,7 +4,7 @@ from .common import Benchmark
 from .datasets import _mnist_dataset
 
 
-class PCA_(Benchmark):
+class PCA_bench(Benchmark):
     """
     Benchmarks for PCA.
     """
@@ -32,7 +32,7 @@ class PCA_(Benchmark):
         pca.fit(self.X)
 
 
-class DictionaryLearning_(Benchmark):
+class DictionaryLearning_bench(Benchmark):
     """
     Benchmarks for DictionnaryLearning.
     """

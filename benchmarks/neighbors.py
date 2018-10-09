@@ -4,7 +4,7 @@ from .common import Benchmark
 from .datasets import _20newsgroups_lowdim_dataset
 
 
-class KNeighborsClassifier_(Benchmark):
+class KNeighborsClassifier_bench(Benchmark):
     """
     Benchmarks for KNeighborsClassifier.
     """

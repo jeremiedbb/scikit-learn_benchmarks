@@ -2,24 +2,20 @@ from sklearn.linear_model import LogisticRegression, Ridge, ElasticNet, Lasso
 
 from .common import Benchmark
 from .datasets import (_20newsgroups_highdim_dataset,
-                       _20newsgroups_lowdim_dataset)
+                       _20newsgroups_lowdim_dataset,
+                       _synth_regression_lowdim_dataset,
+                       _synth_regression_highdim_dataset)
 
 
-class LogisticRegression_(Benchmark):
+class LogisticRegression_bench(Benchmark):
     """
     Benchmarks for LogisticRegression.
     """
-    # params = (representation)
+    # params = (representation, solver)
     param_names = ['params'] + Benchmark.param_names
-    params = ([('dense', 'newton-cg'),
-               ('dense', 'lbfgs'),
-               ('dense', 'liblinear'),
-               ('dense', 'sag'),
+    params = ([('dense', 'lbfgs'),
                ('dense', 'saga'),
-               ('sparse', 'newton-cg'),
                ('sparse', 'lbfgs'),
-               ('sparse', 'liblinear'),
-               ('sparse', 'sag'),
                ('sparse', 'saga')],) + Benchmark.params
 
     def setup(self, params, *common):
@@ -33,12 +29,17 @@ class LogisticRegression_(Benchmark):
         else:
             self.X, self.y = _20newsgroups_lowdim_dataset()
 
-        self.lr_params = {'solver': solver,
-                          'multi_class': 'ovr',
-                          'tol': 0.01,
-                          'max_iter': 300,
-                          'n_jobs': n_jobs,
-                          'random_state': 0}
+        if solver is 'lbfgs':
+            self.lr_params = {'penalty': 'l2'}
+        else:
+            self.lr_params = {'penalty': 'l1'}
+
+        self.lr_params.update({'solver': solver,
+                               'multi_class': 'multinomial',
+                               'tol': 0.01,
+                               'max_iter': 300,
+                               'n_jobs': n_jobs,
+                               'random_state': 0})
 
     def time_fit(self, *args):
         lr = LogisticRegression(**self.lr_params)
@@ -54,7 +55,7 @@ class LogisticRegression_(Benchmark):
         return int(lr.n_iter_[0])
 
 
-class Ridge_(Benchmark):
+class Ridge_bench(Benchmark):
     """
     Benchmarks for Ridge.
     """
@@ -67,9 +68,9 @@ class Ridge_(Benchmark):
         representation = params[0]
 
         if representation is 'sparse':
-            self.X, self.y = _20newsgroups_highdim_dataset()
+            self.X, self.y = _synth_regression_highdim_dataset()
         else:
-            self.X, self.y = _20newsgroups_lowdim_dataset()
+            self.X, self.y = _synth_regression_lowdim_dataset()
 
         self.ridge_params = {'solver': 'lsqr',
                              'fit_intercept': False,
@@ -84,7 +85,7 @@ class Ridge_(Benchmark):
         ridge.fit(self.X, self.y)
 
 
-class ElasticNet_(Benchmark):
+class ElasticNet_bench(Benchmark):
     """
     Benchmarks for ElasticNet.
     """
@@ -100,9 +101,9 @@ class ElasticNet_(Benchmark):
         precompute = params[1]
 
         if representation is 'sparse':
-            self.X, self.y = _20newsgroups_highdim_dataset()
+            self.X, self.y = _synth_regression_highdim_dataset()
         else:
-            self.X, self.y = _20newsgroups_lowdim_dataset()
+            self.X, self.y = _synth_regression_lowdim_dataset()
 
         self.en_params = {'precompute': precompute,
                           'random_state': 0}
@@ -116,7 +117,7 @@ class ElasticNet_(Benchmark):
         en.fit(self.X, self.y)
 
 
-class Lasso_(Benchmark):
+class Lasso_bench(Benchmark):
     """
     Benchmarks for Lasso.
     """
@@ -132,9 +133,9 @@ class Lasso_(Benchmark):
         precompute = params[1]
 
         if representation is 'sparse':
-            self.X, self.y = _20newsgroups_highdim_dataset()
+            self.X, self.y = _synth_regression_highdim_dataset()
         else:
-            self.X, self.y = _20newsgroups_lowdim_dataset()
+            self.X, self.y = _synth_regression_lowdim_dataset()
 
         self.lasso_params = {'precompute': precompute,
                              'random_state': 0}

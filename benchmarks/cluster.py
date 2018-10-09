@@ -8,7 +8,7 @@ from .common import Benchmark
 from .datasets import _china_dataset, _20newsgroups_highdim_dataset
 
 
-class KMeans_(Benchmark):
+class KMeans_bench(Benchmark):
     """
     Benchmarks for KMeans.
     """
@@ -69,7 +69,7 @@ class KMeans_(Benchmark):
         return kmeans.n_iter_
 
 
-class KMeansPlusPlus_(Benchmark):
+class KMeansPlusPlus_bench(Benchmark):
     """
     Benchmarks for k-means++ init.
     """
