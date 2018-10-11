@@ -73,3 +73,14 @@ def _synth_regression_dataset(n_samples=1000, n_features=10000,
         X = sp.csr_matrix(X)
 
     return X, y
+
+
+@M.cache
+def _random_dataset(n_samples=1000, n_features=1000,
+                    representation='dense', dtype=np.float32):
+    if representation is 'dense':
+        X = np.random.random_sample((n_samples, n_features))
+        X = X.astype(dtype, copy=False)
+    else:
+        X = sp.random(n_samples, n_features, format='csr', dtype=dtype)
+    return X
