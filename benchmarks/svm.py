@@ -16,7 +16,7 @@ def getOptimalCacheSize(numFeatures):
 
 
 class SVCSuite(Benchmark):
-    def setup(self):
+    def setup(self, params):
         self.X, self.y = _synth_classification_dataset()
         self.cache_size = getOptimalCacheSize(self.X.shape()[1])
         # We initialize classifier in `setup` to avoid its influence on timing
@@ -30,7 +30,7 @@ class SVCSuite(Benchmark):
             shrinking=True,
         )
 
-    def time_fit(self):
+    def time_fit(self, params):
         svc = svm.SVC(
             C=0.01,
             cache_size=self.cache_size,
