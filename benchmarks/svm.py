@@ -1,8 +1,8 @@
 import numpy as np
 from sklearn import svm
 
-from common import Benchmark
-from datasets import _synth_classification_dataset
+from .common import Benchmark
+from .datasets import _synth_classification_dataset
 
 
 def getOptimalCacheSize(numFeatures):
