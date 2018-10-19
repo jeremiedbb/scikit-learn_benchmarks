@@ -12,7 +12,7 @@ from sklearn.datasets import (
     make_regression,
     make_classification,
 )
-from sklearn.preprocessing import MaxAbsScaler
+from sklearn.preprocessing import MaxAbsScaler, StandardScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
@@ -101,6 +101,6 @@ def _synth_classification_dataset(
 
     X = X.astype(dtype, copy=False)
 
-    X = MaxAbsScaler().fit_transform(X)
+    X = StandardScaler().fit_transform(X)
 
     return X, y
