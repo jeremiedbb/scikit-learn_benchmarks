@@ -43,5 +43,5 @@ class SVCSuite(Benchmark):
 
         svc.fit(self.X, self.y)
 
-    def time_svm_fit_initialized(self):
+    def time_svm_fit_initialized(self, params):
         self.clf.fit(self.X, self.y)

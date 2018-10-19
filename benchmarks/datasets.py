@@ -101,4 +101,6 @@ def _synth_classification_dataset(
 
     X = X.astype(dtype, copy=False)
 
+    X = MaxAbsScaler().fit_transform(X)
+
     return X, y
