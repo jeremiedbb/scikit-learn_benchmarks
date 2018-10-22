@@ -1,20 +1,18 @@
 import numpy as np
 import scipy.sparse as sp
-
 from joblib import Memory
-
-from sklearn.decomposition import TruncatedSVD
 from sklearn.datasets import (
-    load_sample_image,
-    fetch_openml,
     fetch_20newsgroups,
+    fetch_olivetti_faces,
+    fetch_openml,
     load_digits,
-    make_regression,
+    load_sample_image,
     make_classification,
+    make_regression,
 )
-from sklearn.preprocessing import MaxAbsScaler, StandardScaler
+from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import TfidfVectorizer
-
+from sklearn.preprocessing import MaxAbsScaler, StandardScaler
 
 # memory location for caching datasets
 M = Memory(location="/tmp/joblib")
@@ -104,3 +102,20 @@ def _synth_classification_dataset(
     X = StandardScaler().fit_transform(X)
 
     return X, y
+
+
+@M.cache
+def _decomposition_dataset():
+    """
+    Using example from documentation
+    http://scikit-learn.org/stable/auto_examples/decomposition/plot_faces_decomposition.html#sphx-glr-auto-examples-decomposition-plot-faces-decomposition-py
+    """
+    dataset = fetch_olivetti_faces(shuffle=True, random_state=42)
+    faces = dataset.data
+    n_samples, n_features = faces.shape
+    faces_centered = faces - faces.mean(axis=0)
+    # local centering
+    faces_centered -= faces_centered.mean(axis=1).reshape(n_samples, -1)
+    data = faces_centered
+
+    return data
