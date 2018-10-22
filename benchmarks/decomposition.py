@@ -38,7 +38,7 @@ class DictionaryLearning_bench(Benchmark):
     Benchmarks for DictionaryLearning.
     """
 
-    def setup(self):
+    def setup(self, params):
         self.data = _decomposition_dataset()
 
         self.estimator = DictionaryLearning(
@@ -50,12 +50,12 @@ class DictionaryLearning_bench(Benchmark):
             n_jobs=-1,
         )
 
-    def time_fit(self):
+    def time_fit(self, params):
         self.estimator.fit(self.data)
 
 
 class MiniBatchDictionaryLearningSuite(Benchmark):
-    def setup(self):
+    def setup(self, params):
 
         self.data = _decomposition_dataset()
         self.estimator = MiniBatchDictionaryLearning(
@@ -67,5 +67,5 @@ class MiniBatchDictionaryLearningSuite(Benchmark):
             n_jobs=-1,
         )
 
-    def time_fit(self):
+    def time_fit(self, params):
         self.estimator.fit(self.data)
