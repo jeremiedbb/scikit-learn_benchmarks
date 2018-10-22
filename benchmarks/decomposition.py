@@ -44,8 +44,7 @@ class DictionaryLearning_bench(Benchmark):
         self.estimator = DictionaryLearning(
             n_components=15,
             alpha=0.1,
-            n_iter=50,
-            batch_size=3,
+            tol=1e-16,
             random_state=42,
             n_jobs=-1,
         )
