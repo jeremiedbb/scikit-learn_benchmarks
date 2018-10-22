@@ -27,5 +27,5 @@ class CrossValidationSuite(Benchmark):
     def time_crossval(self, params):
         cross_val_score(self.clf, self.X_train, self.y_train, n_jobs=params, cv=4)
 
-    def time_gridsearch(self):
+    def time_gridsearch(self, params):
         self.gs_clf.fit(self.X_train, self.y_train)
