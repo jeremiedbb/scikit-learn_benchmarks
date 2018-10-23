@@ -7,6 +7,7 @@ from .datasets import _synth_classification_dataset
 
 
 class CrossValidationSuite(Benchmark):
+
     def setup(self, params):
         X, y = _synth_classification_dataset(
             n_samples=70000, n_features=200, random_state=0
