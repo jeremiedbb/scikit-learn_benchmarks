@@ -4,6 +4,7 @@ from sklearn.linear_model import (
     ElasticNet,
     Lasso,
     LinearRegression,
+    SGDRegressor,
 )
 from .common import Benchmark
 from .datasets import (
@@ -104,8 +105,8 @@ class Linear_bench(Benchmark):
     """
 
     # params = (representation)
-    param_names = ["params"]
-    params = ([("dense",), ("sparse",)],)
+    param_names = ["params"] + Benchmark.param_names
+    params = ([("dense",), ("sparse",)],) + Benchmark.params
 
     def setup(self, params, *common):
         representation = params[0]
@@ -121,6 +122,22 @@ class Linear_bench(Benchmark):
 
     def peakmem_fit(self, *args):
         self.linear_reg.fit(self.X, self.y)
+
+
+class SGDRegressor_bench(Benchmark):
+    # params = (representation)
+    param_names = ["params"]
+    params = ([("dense",), ("sparse",)],)
+
+    def setup(self, params):
+        representation = params[0]
+
+        self.X, self.y = _synth_regression_dataset(5000, 100000, representation)
+
+        self.sgd_reg = SGDRegressor(max_iter=2000, tol=1e-16)
+
+    def time_fit(self, *args):
+        self.sgd_reg.fit(self.X, self.y)
 
 
 class ElasticNet_bench(Benchmark):

@@ -46,7 +46,7 @@ class DictionaryLearning_bench(Benchmark):
             alpha=0.1,
             tol=1e-16,
             random_state=42,
-            n_jobs=-1,
+            n_jobs=params,
         )
 
     def time_fit(self, params):
@@ -63,7 +63,7 @@ class MiniBatchDictionaryLearningSuite(Benchmark):
             n_iter=50,
             batch_size=3,
             random_state=42,
-            n_jobs=-1,
+            n_jobs=params,
         )
 
     def time_fit(self, params):
