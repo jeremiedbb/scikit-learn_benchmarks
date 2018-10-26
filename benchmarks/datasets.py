@@ -88,3 +88,13 @@ def _synth_classification_dataset(n_samples=1000, n_features=10000,
     X = StandardScaler().fit_transform(X)
 
     return X, y
+
+
+def _random_dataset(n_samples=1000, n_features=1000,
+                    representation='dense', dtype=np.float32):
+    if representation is 'dense':
+        X = np.random.random_sample((n_samples, n_features))
+        X = X.astype(dtype, copy=False)
+    else:
+        X = sp.random(n_samples, n_features, format='csr', dtype=dtype)
+    return X
