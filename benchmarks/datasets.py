@@ -7,7 +7,7 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.datasets import (load_sample_image, fetch_openml,
                               fetch_20newsgroups, load_digits,
                               make_regression, make_classification)
-from sklearn.preprocessing import MaxAbsScaler, StandardScaler
+from sklearn.preprocessing import MaxAbsScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
@@ -77,7 +77,8 @@ def _synth_regression_dataset(n_samples=1000, n_features=10000,
 
 @M.cache
 def _synth_classification_dataset(n_samples=1000, n_features=10000,
-                                  n_classes=2, dtype=np.float32):
+                                  representation='dense', n_classes=2,
+                                  dtype=np.float32):
 
     X, y = make_classification(n_samples=n_samples, n_features=n_features,
                                n_classes=n_classes, random_state=42,
@@ -85,7 +86,11 @@ def _synth_classification_dataset(n_samples=1000, n_features=10000,
 
     X = X.astype(dtype, copy=False)
 
-    X = StandardScaler().fit_transform(X)
+    X = MaxAbsScaler().fit_transform(X)
+
+    if representation is 'sparse':
+        X[X < 2] = 0
+        X = sp.csr_matrix(X)
 
     return X, y
 
