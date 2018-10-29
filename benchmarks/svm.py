@@ -13,7 +13,7 @@ def get_optimal_cache_size(n_features, dtype=np.float32):
     return cache_size_bytes
 
 
-class SVCS_bench(Benchmark):
+class SVC_bench(Benchmark):
 
     # params = (Kernel)
     param_names = ['params']

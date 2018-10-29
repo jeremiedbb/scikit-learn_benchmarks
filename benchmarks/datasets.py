@@ -86,12 +86,11 @@ def _synth_classification_dataset(n_samples=1000, n_features=10000,
 
     X = X.astype(dtype, copy=False)
 
-    X = MaxAbsScaler().fit_transform(X)
-
     if representation is 'sparse':
         X[X < 2] = 0
         X = sp.csr_matrix(X)
 
+    X = MaxAbsScaler().fit_transform(X)
     return X, y
 
 
