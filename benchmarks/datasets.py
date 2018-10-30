@@ -5,21 +5,10 @@ from joblib import Memory
 from sklearn.decomposition import TruncatedSVD
 from sklearn.datasets import (load_sample_image, fetch_openml,
                               fetch_20newsgroups, load_digits,
-                              make_regression, make_classification)
+                              make_regression, make_classification,
+                              fetch_olivetti_faces)
 from sklearn.preprocessing import MaxAbsScaler
-from sklearn.datasets import (
-    fetch_20newsgroups,
-    fetch_olivetti_faces,
-    fetch_openml,
-    load_digits,
-    load_sample_image,
-    make_classification,
-    make_regression,
-)
-from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import TfidfVectorizer
-
-from sklearn.preprocessing import MaxAbsScaler, StandardScaler
 
 # memory location for caching datasets
 M = Memory(location="/tmp/joblib")
@@ -93,10 +82,10 @@ def _synth_classification_dataset(n_samples=1000, n_features=10000,
     X, y = make_classification(n_samples=n_samples, n_features=n_features,
                                n_classes=n_classes, random_state=42,
                                n_informative=n_features, n_redundant=0)
-
     X = X.astype(dtype, copy=False)
-
-
+    if representation is 'sparse':
+        X[X < 2] = 0
+        X = sp.csr_matrix(X)
     X = MaxAbsScaler().fit_transform(X)
     return X, y
 

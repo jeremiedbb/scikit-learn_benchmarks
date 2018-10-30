@@ -1,4 +1,8 @@
-from sklearn.decomposition import PCA, DictionaryLearning, MiniBatchDictionaryLearning
+from sklearn.decomposition import (
+    PCA,
+    DictionaryLearning,
+    MiniBatchDictionaryLearning,
+)
 
 from .common import Benchmark
 from .datasets import _mnist_dataset, _decomposition_dataset
@@ -37,6 +41,7 @@ class DictionaryLearning_bench(Benchmark):
     """
     Benchmarks for DictionaryLearning.
     """
+
     # params = (fit_algorithm)
     param_names = ["params"] + Benchmark.param_names
     params = ([("lars",), ("cd",)],) + Benchmark.params
@@ -63,7 +68,7 @@ class DictionaryLearning_bench(Benchmark):
         estimator.fit(self.data)
 
 
-class MiniBatchDictionaryLearningSuite(Benchmark):
+class MiniBatchDictionaryLearning_bench(Benchmark):
     # params = (fit_algorithm)
     param_names = ["params"] + Benchmark.param_names
     params = ([("lars",), ("cd",)],) + Benchmark.params
