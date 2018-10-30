@@ -82,7 +82,8 @@ class Ridge_bench(Benchmark):
     def setup(self, params):
         representation = params[0]
 
-        self.X, self.y = _synth_regression_dataset(5000, 100000, representation)
+        self.X, self.y = _synth_regression_dataset(5000, 100000,
+                                                   representation)
 
         self.ridge_params = {
             "solver": "lsqr",
@@ -110,18 +111,18 @@ class Linear_bench(Benchmark):
 
     def setup(self, params, *common):
         representation = params[0]
+        self.n_jobs = common[0]
 
-        n_jobs = common[0]
-
-        self.X, self.y = _synth_regression_dataset(5000, 100000, representation)
-
-        self.linear_reg = LinearRegression(n_jobs=n_jobs)
+        self.X, self.y = _synth_regression_dataset(5000, 100000,
+                                                   representation)
 
     def time_fit(self, *args):
-        self.linear_reg.fit(self.X, self.y)
+        linear_reg = LinearRegression(n_jobs=self.n_jobs)
+        linear_reg.fit(self.X, self.y)
 
     def peakmem_fit(self, *args):
-        self.linear_reg.fit(self.X, self.y)
+        linear_reg = LinearRegression(n_jobs=self.n_jobs)
+        linear_reg.fit(self.X, self.y)
 
 
 class SGDRegressor_bench(Benchmark):
@@ -132,12 +133,16 @@ class SGDRegressor_bench(Benchmark):
     def setup(self, params):
         representation = params[0]
 
-        self.X, self.y = _synth_regression_dataset(5000, 100000, representation)
-
-        self.sgd_reg = SGDRegressor(max_iter=2000, tol=1e-16)
+        self.X, self.y = _synth_regression_dataset(5000, 100000,
+                                                   representation)
 
     def time_fit(self, *args):
-        self.sgd_reg.fit(self.X, self.y)
+        sgd_reg = SGDRegressor(max_iter=2000, tol=1e-16)
+        sgd_reg.fit(self.X, self.y)
+
+    def peakmem_fit(self, *args):
+        sgd_reg = SGDRegressor(max_iter=2000, tol=1e-16)
+        sgd_reg.fit(self.X, self.y)
 
 
 class ElasticNet_bench(Benchmark):
@@ -147,7 +152,14 @@ class ElasticNet_bench(Benchmark):
 
     # params = (representation, precompute)
     param_names = ["params"]
-    params = ([("dense", True), ("dense", False), ("sparse", True), ("sparse", False)],)
+    params = (
+        [
+            ("dense", True),
+            ("dense", False),
+            ("sparse", True),
+            ("sparse", False),
+        ],
+    )
 
     def setup(self, params):
         representation = params[0]
@@ -173,7 +185,14 @@ class Lasso_bench(Benchmark):
 
     # params = (representation, precompute)
     param_names = ["params"]
-    params = ([("dense", True), ("dense", False), ("sparse", True), ("sparse", False)],)
+    params = (
+        [
+            ("dense", True),
+            ("dense", False),
+            ("sparse", True),
+            ("sparse", False),
+        ],
+    )
 
     def setup(self, params):
         representation = params[0]
