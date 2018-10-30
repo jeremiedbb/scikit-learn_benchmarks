@@ -12,10 +12,10 @@ N_JOBS_VALS = [1, ]
 
 try:
     multicore = os.getenv("MULTICORE")
-    results = map(int, multicore.split(','))
+    results = map(int, multicore.split(','), -1)
     N_JOBS_VALS.extend(results)
-except OSError:
-    N_JOBS_VALS = [1, -1]
+except Exception:
+    pass
 
 
 class Benchmark:
