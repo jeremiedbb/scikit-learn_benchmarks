@@ -1,6 +1,12 @@
 import numpy as np
 import scipy.sparse as sp
 from joblib import Memory
+
+from sklearn.decomposition import TruncatedSVD
+from sklearn.datasets import (load_sample_image, fetch_openml,
+                              fetch_20newsgroups, load_digits,
+                              make_regression, make_classification)
+from sklearn.preprocessing import MaxAbsScaler
 from sklearn.datasets import (
     fetch_20newsgroups,
     fetch_olivetti_faces,
@@ -12,6 +18,7 @@ from sklearn.datasets import (
 )
 from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import TfidfVectorizer
+
 from sklearn.preprocessing import MaxAbsScaler, StandardScaler
 
 # memory location for caching datasets
@@ -65,18 +72,13 @@ def _digits_dataset(dtype=np.float32):
 
 
 @M.cache
-def _synth_regression_dataset(
-    n_samples=1000, n_features=10000, representation="dense", dtype=np.float32
-):
-    X, y = make_regression(
-        n_samples=n_samples,
-        n_features=n_features,
-        n_informative=n_features // 10,
-        noise=0.1,
-    )
+def _synth_regression_dataset(n_samples=1000, n_features=10000,
+                              representation="dense", dtype=np.float32):
+    X, y = make_regression(n_samples=n_samples, n_features=n_features,
+                           n_informative=n_features//10, noise=0.1)
     X = X.astype(dtype, copy=False)
 
-    if representation is "sparse":
+    if representation is 'sparse':
         X[X < 2] = 0
         X = sp.csr_matrix(X)
 
@@ -84,23 +86,18 @@ def _synth_regression_dataset(
 
 
 @M.cache
-def _synth_classification_dataset(
-    n_samples=1000, n_features=10000, n_classes=2, dtype=np.float32
-):
+def _synth_classification_dataset(n_samples=1000, n_features=10000,
+                                  representation='dense', n_classes=2,
+                                  dtype=np.float32):
 
-    X, y = make_classification(
-        n_samples=n_samples,
-        n_features=n_features,
-        n_classes=n_classes,
-        random_state=42,
-        n_informative=n_features,
-        n_redundant=0,
-    )
+    X, y = make_classification(n_samples=n_samples, n_features=n_features,
+                               n_classes=n_classes, random_state=42,
+                               n_informative=n_features, n_redundant=0)
 
     X = X.astype(dtype, copy=False)
 
-    X = StandardScaler().fit_transform(X)
 
+    X = MaxAbsScaler().fit_transform(X)
     return X, y
 
 
@@ -119,3 +116,14 @@ def _decomposition_dataset():
     data = faces_centered
 
     return data
+
+
+@M.cache
+def _random_dataset(n_samples=1000, n_features=1000,
+                    representation='dense', dtype=np.float32):
+    if representation is 'dense':
+        X = np.random.random_sample((n_samples, n_features))
+        X = X.astype(dtype, copy=False)
+    else:
+        X = sp.random(n_samples, n_features, format='csr', dtype=dtype)
+    return X
