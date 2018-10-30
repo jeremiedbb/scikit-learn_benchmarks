@@ -37,34 +37,54 @@ class DictionaryLearning_bench(Benchmark):
     """
     Benchmarks for DictionaryLearning.
     """
+    # params = (fit_algorithm)
+    param_names = ["params"] + Benchmark.param_names
+    params = ([("lars",), ("cd",)],) + Benchmark.params
 
-    def setup(self, params):
+    def setup(self, params, *common):
         self.data = _decomposition_dataset()
-
-        self.estimator = DictionaryLearning(
-            n_components=15,
-            alpha=0.1,
-            tol=1e-16,
-            random_state=42,
-            n_jobs=params,
-        )
+        fit_algorithm = params[0]
+        n_jobs = common[0]
+        self.dl_params = {
+            "n_components": 15,
+            "fit_algorithm": fit_algorithm,
+            "alpha": 0.1,
+            "tol": 1e-16,
+            "random_state": 42,
+            "n_jobs": n_jobs,
+        }
 
     def time_fit(self, params):
-        self.estimator.fit(self.data)
+        estimator = DictionaryLearning(**self.dl_params)
+        estimator.fit(self.data)
+
+    def peakmem_fit(self, params):
+        estimator = DictionaryLearning(**self.dl_params)
+        estimator.fit(self.data)
 
 
 class MiniBatchDictionaryLearningSuite(Benchmark):
-    def setup(self, params):
+    # params = (fit_algorithm)
+    param_names = ["params"] + Benchmark.param_names
+    params = ([("lars",), ("cd",)],) + Benchmark.params
 
+    def setup(self, params, *common):
         self.data = _decomposition_dataset()
-        self.estimator = MiniBatchDictionaryLearning(
-            n_components=15,
-            alpha=0.1,
-            n_iter=50,
-            batch_size=3,
-            random_state=42,
-            n_jobs=params,
-        )
+        fit_algorithm = params[0]
+        n_jobs = common[0]
+        self.dl_params = {
+            "n_components": 15,
+            "fit_algorithm": fit_algorithm,
+            "alpha": 0.1,
+            "tol": 1e-16,
+            "random_state": 42,
+            "n_jobs": n_jobs,
+        }
 
     def time_fit(self, params):
-        self.estimator.fit(self.data)
+        estimator = MiniBatchDictionaryLearning(**self.dl_params)
+        estimator.fit(self.data)
+
+    def peakmem_fit(self, params):
+        estimator = MiniBatchDictionaryLearning(**self.dl_params)
+        estimator.fit(self.data)
