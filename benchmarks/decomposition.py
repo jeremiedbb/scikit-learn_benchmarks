@@ -14,8 +14,8 @@ class PCA_bench(Benchmark):
     """
 
     # params = (svd_solver)
-    param_names = ["params"]
-    params = ([("full",), ("arpack",), ("randomized",)],)
+    param_names = ['params']
+    params = ([('full', ), ('arpack', ), ('randomized', )], )
 
     def setup(self, params):
         svd_solver = params[0]
@@ -23,9 +23,9 @@ class PCA_bench(Benchmark):
         self.X, _ = _mnist_dataset()
 
         self.pca_params = {
-            "n_components": 8,
-            "svd_solver": svd_solver,
-            "random_state": 0,
+            'n_components': 8,
+            'svd_solver': svd_solver,
+            'random_state': 0,
         }
 
     def time_fit(self, *args):
@@ -43,20 +43,20 @@ class DictionaryLearning_bench(Benchmark):
     """
 
     # params = (fit_algorithm)
-    param_names = ["params"] + Benchmark.param_names
-    params = ([("lars",), ("cd",)],) + Benchmark.params
+    param_names = ['params'] + Benchmark.param_names
+    params = ([('lars', ), ('cd', )], ) + Benchmark.params
 
     def setup(self, params, *common):
         self.data = _decomposition_dataset()
         fit_algorithm = params[0]
         n_jobs = common[0]
         self.dl_params = {
-            "n_components": 15,
-            "fit_algorithm": fit_algorithm,
-            "alpha": 0.1,
-            "tol": 1e-16,
-            "random_state": 42,
-            "n_jobs": n_jobs,
+            'n_components': 15,
+            'fit_algorithm': fit_algorithm,
+            'alpha': 0.1,
+            'tol': 1e-16,
+            'random_state': 42,
+            'n_jobs': n_jobs,
         }
 
     def time_fit(self, params):
@@ -69,21 +69,24 @@ class DictionaryLearning_bench(Benchmark):
 
 
 class MiniBatchDictionaryLearning_bench(Benchmark):
+    """
+    Benchmarks for MiniBatchDictionaryLearning
+    """
     # params = (fit_algorithm)
-    param_names = ["params"] + Benchmark.param_names
-    params = ([("lars",), ("cd",)],) + Benchmark.params
+    param_names = ['params'] + Benchmark.param_names
+    params = ([('lars', ), ('cd', )], ) + Benchmark.params
 
     def setup(self, params, *common):
         self.data = _decomposition_dataset()
         fit_algorithm = params[0]
         n_jobs = common[0]
         self.dl_params = {
-            "n_components": 15,
-            "fit_algorithm": fit_algorithm,
-            "alpha": 0.1,
-            "tol": 1e-16,
-            "random_state": 42,
-            "n_jobs": n_jobs,
+            'n_components': 15,
+            'fit_algorithm': fit_algorithm,
+            'alpha': 0.1,
+            'tol': 1e-16,
+            'random_state': 42,
+            'n_jobs': n_jobs,
         }
 
     def time_fit(self, params):

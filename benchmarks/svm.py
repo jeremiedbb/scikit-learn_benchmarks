@@ -17,10 +17,7 @@ class SVC_bench(Benchmark):
 
     # params = (Kernel)
     param_names = ['params']
-    params = ([('linear',),
-               ('poly',),
-               ('rbf',),
-               ('sigmoid',)],)
+    params = ([('linear', ), ('poly', ), ('rbf', ), ('sigmoid', )], )
 
     def setup(self, params):
         self.X, self.y = _synth_classification_dataset()

@@ -1,6 +1,5 @@
 import os
 import timeit
-
 """
 if environment variable $MULTICORE is set, benchmarks will be run for
 n_jobs vals = (1, $MULTICORE). Otherwise for n_jobs vals = (1, -1)
@@ -11,7 +10,7 @@ Example: export MULTICORE=2,3,4,5
 N_JOBS_VALS = [1, ]
 
 try:
-    multicore = os.getenv("MULTICORE")
+    multicore = os.getenv('MULTICORE')
     results = map(int, multicore.split(','), -1)
     N_JOBS_VALS.extend(results)
 except Exception:
@@ -25,5 +24,5 @@ class Benchmark:
     number = 1
     repeat = 1
 
-    param_names = ["n_jobs"]
-    params = (N_JOBS_VALS,)
+    param_names = ['n_jobs']
+    params = (N_JOBS_VALS, )
