@@ -16,10 +16,11 @@ if os.getenv('MULTICORE'):
 
 class Benchmark:
     timer = timeit.default_timer  # wall time
+    warmup_time = 1
     timeout = 500
     processes = 1
-    number = 1
-    repeat = 1
+    sample_time = 0.5
+    repeat = (3, 100, 120.0)
 
     param_names = ['n_jobs']
     params = (N_JOBS_VALS, )
