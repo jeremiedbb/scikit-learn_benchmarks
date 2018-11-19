@@ -11,8 +11,7 @@ class RandomForestClassifier_bench(Benchmark):
     """
     # params = (representation)
     param_names = ['params'] + Benchmark.param_names
-    params = ([('dense',),
-               ('sparse',)],) + Benchmark.params
+    params = ([('dense', ), ('sparse', )], ) + Benchmark.params
 
     def setup(self, params, *common):
         representation = params[0]
@@ -24,11 +23,13 @@ class RandomForestClassifier_bench(Benchmark):
         else:
             self.X, self.y = _20newsgroups_lowdim_dataset()
 
-        self.rf_params = {'n_estimators': 100,
-                          'min_samples_split': 10,
-                          'max_features': 'log2',
-                          'n_jobs': n_jobs,
-                          'random_state': 0}
+        self.rf_params = {
+            'n_estimators': 100,
+            'min_samples_split': 10,
+            'max_features': 'log2',
+            'n_jobs': n_jobs,
+            'random_state': 0
+        }
 
     def time_fit(self, *args):
         rf = RandomForestClassifier(**self.rf_params)
@@ -45,8 +46,7 @@ class GradientBoostingClassifier_bench(Benchmark):
     """
     # params = (representation)
     param_names = ['params']
-    params = ([('dense',),
-               ('sparse',)],)
+    params = ([('dense', ), ('sparse', )], )
 
     def setup(self, params, *common):
         representation = params[0]
@@ -56,10 +56,12 @@ class GradientBoostingClassifier_bench(Benchmark):
         else:
             self.X, self.y = _20newsgroups_lowdim_dataset()
 
-        self.gb_params = {'n_estimators': 10,
-                          'max_features': 'log2',
-                          'subsample': 0.5,
-                          'random_state': 0}
+        self.gb_params = {
+            'n_estimators': 10,
+            'max_features': 'log2',
+            'subsample': 0.5,
+            'random_state': 0
+        }
 
     def time_fit(self, *args):
         gb = GradientBoostingClassifier(**self.gb_params)
