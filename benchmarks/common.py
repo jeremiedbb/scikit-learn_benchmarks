@@ -7,14 +7,11 @@ MULTICORE can be a list of values as well.
 Example: export MULTICORE=2,3,4,5
 """
 
-N_JOBS_VALS = [1, ]
+N_JOBS_VALS = [1, -1]
 
-try:
+if os.getenv('MULTICORE'):
     multicore = os.getenv('MULTICORE')
-    results = map(int, multicore.split(','), -1)
-    N_JOBS_VALS.extend(results)
-except Exception:
-    pass
+    N_JOBS_VALS = list(map(int, multicore.split(',')))
 
 
 class Benchmark:
