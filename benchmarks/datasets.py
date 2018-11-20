@@ -60,15 +60,10 @@ def _digits_dataset(dtype=np.float32):
 
 
 @M.cache
-def _synth_regression_dataset(n_samples=1000,
-                              n_features=10000,
-                              representation='dense',
-                              dtype=np.float32):
-    X, y = make_regression(
-        n_samples=n_samples,
-        n_features=n_features,
-        n_informative=n_features // 10,
-        noise=0.1)
+def _synth_regression_dataset(n_samples=1000, n_features=10000,
+                              representation='dense', dtype=np.float32):
+    X, y = make_regression(n_samples=n_samples, n_features=n_features,
+                           n_informative=n_features // 10, noise=0.1)
     X = X.astype(dtype, copy=False)
 
     if representation is 'sparse':
@@ -79,19 +74,13 @@ def _synth_regression_dataset(n_samples=1000,
 
 
 @M.cache
-def _synth_classification_dataset(n_samples=1000,
-                                  n_features=10000,
-                                  representation='dense',
-                                  n_classes=2,
+def _synth_classification_dataset(n_samples=1000, n_features=10000,
+                                  representation='dense', n_classes=2,
                                   dtype=np.float32):
 
-    X, y = make_classification(
-        n_samples=n_samples,
-        n_features=n_features,
-        n_classes=n_classes,
-        random_state=42,
-        n_informative=n_features,
-        n_redundant=0)
+    X, y = make_classification(n_samples=n_samples, n_features=n_features,
+                               n_classes=n_classes, random_state=42,
+                               n_informative=n_features, n_redundant=0)
     X = X.astype(dtype, copy=False)
     if representation is 'sparse':
         X[X < 2] = 0
@@ -118,10 +107,8 @@ def _decomposition_dataset():
 
 
 @M.cache
-def _random_dataset(n_samples=1000,
-                    n_features=1000,
-                    representation='dense',
-                    dtype=np.float32):
+def _random_dataset(n_samples=1000, n_features=1000,
+                    representation='dense', dtype=np.float32):
     if representation is 'dense':
         X = np.random.random_sample((n_samples, n_features))
         X = X.astype(dtype, copy=False)

@@ -2,7 +2,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV, cross_val_score
 
 from .common import Benchmark
-
 from .datasets import _synth_classification_dataset
 
 
