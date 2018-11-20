@@ -1,17 +1,14 @@
-from sklearn.linear_model import (
-    LogisticRegression,
-    Ridge,
-    ElasticNet,
-    Lasso,
-    LinearRegression,
-    SGDRegressor,
-)
+from sklearn.linear_model import LogisticRegression, Ridge, ElasticNet, Lasso, LinearRegression, SGDRegressor
+
 from .common import Benchmark
-from .datasets import (
-    _20newsgroups_highdim_dataset,
-    _20newsgroups_lowdim_dataset,
-    _synth_regression_dataset,
-)
+from .datasets import (_20newsgroups_highdim_dataset,
+                       _20newsgroups_lowdim_dataset, _synth_regression_dataset)
+
+Ridge,
+ElasticNet,
+Lasso,
+LinearRegression,
+SGDRegressor
 
 
 class LogisticRegression_bench(Benchmark):
@@ -21,12 +18,11 @@ class LogisticRegression_bench(Benchmark):
 
     # params = (representation, solver)
     param_names = ['params'] + Benchmark.param_names
-    params = ([
-        ('dense', 'lbfgs'),
-        ('dense', 'saga'),
-        ('sparse', 'lbfgs'),
-        ('sparse', 'saga'),
-    ], ) + Benchmark.params
+    params = ([('dense', 'lbfgs'),
+               ('dense', 'saga'),
+               ('sparse', 'lbfgs'),
+               ('sparse', 'saga'),
+               ], ) + Benchmark.params
 
     def setup(self, params, *common):
         representation = params[0]
@@ -44,13 +40,11 @@ class LogisticRegression_bench(Benchmark):
         else:
             self.lr_params = {'penalty': 'l1'}
 
-        self.lr_params.update({
-            'solver': solver,
-            'multi_class': 'multinomial',
-            'tol': 0.01,
-            'n_jobs': n_jobs,
-            'random_state': 0,
-        })
+        self.lr_params.update({'solver': solver,
+                               'multi_class': 'multinomial',
+                               'tol': 0.01,
+                               'n_jobs': n_jobs,
+                               'random_state': 0, })
 
     def time_fit(self, *args):
         lr = LogisticRegression(**self.lr_params)
@@ -81,11 +75,9 @@ class Ridge_bench(Benchmark):
         self.X, self.y = _synth_regression_dataset(5000, 100000,
                                                    representation)
 
-        self.ridge_params = {
-            'solver': 'lsqr',
-            'fit_intercept': False,
-            'random_state': 0,
-        }
+        self.ridge_params = {'solver': 'lsqr',
+                             'fit_intercept': False,
+                             'random_state': 0}
 
     def time_fit(self, *args):
         ridge = Ridge(**self.ridge_params)
@@ -103,7 +95,8 @@ class Linear_bench(Benchmark):
 
     # params = (representation)
     param_names = ['params'] + Benchmark.param_names
-    params = ([('dense', ), ('sparse', )], ) + Benchmark.params
+    params = ([('dense', ),
+               ('sparse', )], ) + Benchmark.params
 
     def setup(self, params, *common):
         representation = params[0]
@@ -125,10 +118,11 @@ class SGDRegressor_bench(Benchmark):
     """
     Benchmark for SGD
     """
-    
+
     # params = (representation)
     param_names = ['params']
-    params = ([('dense', ), ('sparse', )], )
+    params = ([('dense', ),
+               ('sparse', )], )
 
     def setup(self, params):
         representation = params[0]
@@ -196,7 +190,8 @@ class Lasso_bench(Benchmark):
 
         self.X, self.y = _synth_regression_dataset(1000, 10000, representation)
 
-        self.lasso_params = {'precompute': precompute, 'random_state': 0}
+        self.lasso_params = {'precompute': precompute,
+                             'random_state': 0}
 
     def time_fit(self, *args):
         lasso = Lasso(**self.lasso_params)

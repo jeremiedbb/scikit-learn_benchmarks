@@ -14,7 +14,8 @@ class KMeans_bench(Benchmark):
     """
     # params = (representation, algorithm)
     param_names = ['params'] + Benchmark.param_names
-    params = ([('dense', 'full'), ('dense', 'elkan'),
+    params = ([('dense', 'full'),
+               ('dense', 'elkan'),
                ('sparse', 'full')], ) + Benchmark.params
 
     def setup(self, params, *common):
