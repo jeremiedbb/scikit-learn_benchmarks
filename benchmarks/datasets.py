@@ -3,8 +3,8 @@ import scipy.sparse as sp
 from joblib import Memory
 
 from sklearn.decomposition import TruncatedSVD
-from sklearn.datasets import (load_sample_image, fetch_openml,
-                              fetch_20newsgroups, load_digits, make_regression,
+from sklearn.datasets import (load_sample_image, fetch_20newsgroups,
+                              fetch_openml, load_digits, make_regression,
                               make_classification, fetch_olivetti_faces)
 from sklearn.preprocessing import MaxAbsScaler
 from sklearn.feature_extraction.text import TfidfVectorizer

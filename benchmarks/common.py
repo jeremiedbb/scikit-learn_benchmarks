@@ -23,4 +23,4 @@ class Benchmark:
     repeat = (3, 100, 120.0)
 
     param_names = ['n_jobs']
-    params = (N_JOBS_VALS, )
+    params = (N_JOBS_VALS,)

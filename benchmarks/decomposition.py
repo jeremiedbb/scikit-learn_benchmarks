@@ -12,9 +12,9 @@ class PCA_bench(Benchmark):
 
     # params = (svd_solver)
     param_names = ['params']
-    params = ([('full', ),
-               ('arpack', ),
-               ('randomized', )], )
+    params = ([('full',),
+               ('arpack',),
+               ('randomized',)],)
 
     def setup(self, params):
         svd_solver = params[0]
@@ -41,8 +41,8 @@ class DictionaryLearning_bench(Benchmark):
 
     # params = (fit_algorithm)
     param_names = ['params'] + Benchmark.param_names
-    params = ([('lars', ),
-               ('cd', )], ) + Benchmark.params
+    params = ([('lars',),
+               ('cd',)],) + Benchmark.params
 
     def setup(self, params, *common):
         self.data = _decomposition_dataset()
@@ -70,8 +70,8 @@ class MiniBatchDictionaryLearning_bench(Benchmark):
     """
     # params = (fit_algorithm)
     param_names = ['params'] + Benchmark.param_names
-    params = ([('lars', ),
-               ('cd', )], ) + Benchmark.params
+    params = ([('lars',),
+               ('cd',)],) + Benchmark.params
 
     def setup(self, params, *common):
         self.data = _decomposition_dataset()

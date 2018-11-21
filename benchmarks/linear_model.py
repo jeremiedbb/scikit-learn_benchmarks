@@ -1,14 +1,9 @@
-from sklearn.linear_model import LogisticRegression, Ridge, ElasticNet, Lasso, LinearRegression, SGDRegressor
+from sklearn.linear_model import (LogisticRegression, Ridge, ElasticNet, Lasso,
+                                  LinearRegression, SGDRegressor)
 
 from .common import Benchmark
 from .datasets import (_20newsgroups_highdim_dataset,
                        _20newsgroups_lowdim_dataset, _synth_regression_dataset)
-
-Ridge,
-ElasticNet,
-Lasso,
-LinearRegression,
-SGDRegressor
 
 
 class LogisticRegression_bench(Benchmark):
@@ -21,8 +16,7 @@ class LogisticRegression_bench(Benchmark):
     params = ([('dense', 'lbfgs'),
                ('dense', 'saga'),
                ('sparse', 'lbfgs'),
-               ('sparse', 'saga'),
-               ], ) + Benchmark.params
+               ('sparse', 'saga')],) + Benchmark.params
 
     def setup(self, params, *common):
         representation = params[0]
@@ -44,7 +38,7 @@ class LogisticRegression_bench(Benchmark):
                                'multi_class': 'multinomial',
                                'tol': 0.01,
                                'n_jobs': n_jobs,
-                               'random_state': 0, })
+                               'random_state': 0})
 
     def time_fit(self, *args):
         lr = LogisticRegression(**self.lr_params)
@@ -67,7 +61,8 @@ class Ridge_bench(Benchmark):
 
     # params = (representation)
     param_names = ['params']
-    params = ([('dense', ), ('sparse', )], )
+    params = ([('dense',),
+               ('sparse',)],)
 
     def setup(self, params):
         representation = params[0]
@@ -95,8 +90,8 @@ class Linear_bench(Benchmark):
 
     # params = (representation)
     param_names = ['params'] + Benchmark.param_names
-    params = ([('dense', ),
-               ('sparse', )], ) + Benchmark.params
+    params = ([('dense',),
+               ('sparse',)],) + Benchmark.params
 
     def setup(self, params, *common):
         representation = params[0]
@@ -121,8 +116,8 @@ class SGDRegressor_bench(Benchmark):
 
     # params = (representation)
     param_names = ['params']
-    params = ([('dense', ),
-               ('sparse', )], )
+    params = ([('dense',),
+               ('sparse',)],)
 
     def setup(self, params):
         representation = params[0]
@@ -146,12 +141,10 @@ class ElasticNet_bench(Benchmark):
 
     # params = (representation, precompute)
     param_names = ['params']
-    params = ([
-        ('dense', True),
-        ('dense', False),
-        ('sparse', True),
-        ('sparse', False),
-    ], )
+    params = ([('dense', True),
+               ('dense', False),
+               ('sparse', True),
+               ('sparse', False)],)
 
     def setup(self, params):
         representation = params[0]
@@ -159,7 +152,8 @@ class ElasticNet_bench(Benchmark):
 
         self.X, self.y = _synth_regression_dataset(1000, 10000, representation)
 
-        self.en_params = {'precompute': precompute, 'random_state': 0}
+        self.en_params = {'precompute': precompute,
+                          'random_state': 0}
 
     def time_fit(self, *args):
         en = ElasticNet(**self.en_params)
@@ -177,12 +171,10 @@ class Lasso_bench(Benchmark):
 
     # params = (representation, precompute)
     param_names = ['params']
-    params = ([
-        ('dense', True),
-        ('dense', False),
-        ('sparse', True),
-        ('sparse', False),
-    ], )
+    params = ([('dense', True),
+               ('dense', False),
+               ('sparse', True),
+               ('sparse', False)],)
 
     def setup(self, params):
         representation = params[0]

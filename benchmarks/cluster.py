@@ -16,7 +16,7 @@ class KMeans_bench(Benchmark):
     param_names = ['params'] + Benchmark.param_names
     params = ([('dense', 'full'),
                ('dense', 'elkan'),
-               ('sparse', 'full')], ) + Benchmark.params
+               ('sparse', 'full')],) + Benchmark.params
 
     def setup(self, params, *common):
         representation = params[0]
@@ -33,27 +33,25 @@ class KMeans_bench(Benchmark):
 
         self.x_squared_norms = row_norms(self.X, squared=True)
 
-        self.kmeans_params = {
-            'n_clusters': self.n_clusters,
-            'algorithm': algo,
-            'n_init': 1,
-            'n_jobs': n_jobs,
-            'random_state': 0
-        }
+        self.kmeans_params = {'n_clusters': self.n_clusters,
+                              'algorithm': algo,
+                              'n_init': 1,
+                              'n_jobs': n_jobs,
+                              'random_state': 0}
 
     def time_iterations(self, *args):
-        kmeans = KMeans(
-            init='random', max_iter=10, tol=0, **self.kmeans_params)
+        kmeans = KMeans(init='random', max_iter=10, tol=0,
+                        **self.kmeans_params)
         kmeans.fit(self.X)
 
     def peakmem_iterations(self, *args):
-        kmeans = KMeans(
-            init='random', max_iter=10, tol=0, **self.kmeans_params)
+        kmeans = KMeans(init='random', max_iter=10, tol=0,
+                        **self.kmeans_params)
         kmeans.fit(self.X)
 
     def track_iterations(self, *args):
-        kmeans = KMeans(
-            init='random', max_iter=10, tol=0, **self.kmeans_params)
+        kmeans = KMeans(init='random', max_iter=10, tol=0,
+                        **self.kmeans_params)
         kmeans.fit(self.X)
         return kmeans.n_iter_
 
@@ -85,10 +83,10 @@ class KMeansPlusPlus_bench(Benchmark):
 
     def time_kmeansplusplus(self):
         rng = np.random.RandomState(0)
-        _k_init(
-            self.X, self.n_clusters, self.x_squared_norms, random_state=rng)
+        _k_init(self.X, self.n_clusters, self.x_squared_norms,
+                random_state=rng)
 
     def peakmem_kmeansplusplus(self):
         rng = np.random.RandomState(0)
-        _k_init(
-            self.X, self.n_clusters, self.x_squared_norms, random_state=rng)
+        _k_init(self.X, self.n_clusters, self.x_squared_norms,
+                random_state=rng)

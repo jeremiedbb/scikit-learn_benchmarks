@@ -17,10 +17,10 @@ class SVC_bench(Benchmark):
 
     # params = (Kernel)
     param_names = ['params']
-    params = ([('linear', ),
-               ('poly', ),
-               ('rbf', ),
-               ('sigmoid', )], )
+    params = ([('linear',),
+               ('poly',),
+               ('rbf',),
+               ('sigmoid',)],)
 
     def setup(self, params):
         self.X, self.y = _synth_classification_dataset()
@@ -32,7 +32,7 @@ class SVC_bench(Benchmark):
                            "tol": 1e-16,
                            "kernel": params[0],
                            "random_state": 42,
-                           "shrinking": True, }
+                           "shrinking": True}
 
     def time_fit(self, *args):
         svc = svm.SVC(**self.svc_params)

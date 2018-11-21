@@ -11,8 +11,8 @@ class RandomForestClassifier_bench(Benchmark):
     """
     # params = (representation)
     param_names = ['params'] + Benchmark.param_names
-    params = ([('dense', ),
-               ('sparse', )], ) + Benchmark.params
+    params = ([('dense',),
+               ('sparse',)],) + Benchmark.params
 
     def setup(self, params, *common):
         representation = params[0]
@@ -45,8 +45,8 @@ class GradientBoostingClassifier_bench(Benchmark):
     """
     # params = (representation)
     param_names = ['params']
-    params = ([('dense', ),
-               ('sparse', )], )
+    params = ([('dense',),
+               ('sparse',)],)
 
     def setup(self, params, *common):
         representation = params[0]
