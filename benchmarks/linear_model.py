@@ -83,7 +83,7 @@ class Ridge_bench(Benchmark):
         ridge.fit(self.X, self.y)
 
 
-class Linear_bench(Benchmark):
+class LinearRegression_bench(Benchmark):
     """
     Benchmarks for Linear Reagression.
     """
