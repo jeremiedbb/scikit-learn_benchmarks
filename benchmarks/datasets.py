@@ -90,7 +90,7 @@ def _synth_classification_dataset(n_samples=1000, n_features=10000,
 
 
 @M.cache
-def _decomposition_dataset():
+def olivetti_faces_dataset():
     """
     Using example from documentation
     http://scikit-learn.org/stable/auto_examples/decomposition/plot_faces_decomposition.html#sphx-glr-auto-examples-decomposition-plot-faces-decomposition-py
