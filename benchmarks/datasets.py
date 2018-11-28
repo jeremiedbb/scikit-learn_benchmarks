@@ -1,23 +1,21 @@
 import numpy as np
 import scipy.sparse as sp
-
 from joblib import Memory
 
 from sklearn.decomposition import TruncatedSVD
-from sklearn.datasets import (load_sample_image, fetch_openml,
-                              fetch_20newsgroups, load_digits,
-                              make_regression, make_classification)
+from sklearn.datasets import (load_sample_image, fetch_20newsgroups,
+                              fetch_openml, load_digits, make_regression,
+                              make_classification, fetch_olivetti_faces)
 from sklearn.preprocessing import MaxAbsScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-
 # memory location for caching datasets
-M = Memory(location="/tmp/joblib")
+M = Memory(location='/tmp/joblib')
 
 
 @M.cache
 def _china_dataset(dtype=np.float32):
-    img = load_sample_image("china.jpg")
+    img = load_sample_image('china.jpg')
     X = np.array(img, dtype=dtype) / 255
     X = X.reshape((-1, 3))
     return X
@@ -47,7 +45,7 @@ def _20newsgroups_lowdim_dataset(n_components=100, dtype=np.float32):
 
 @M.cache
 def _mnist_dataset(dtype=np.float32):
-    X, y = fetch_openml("mnist_784", version=1, return_X_y=True)
+    X, y = fetch_openml('mnist_784', version=1, return_X_y=True)
     X = X.astype(dtype, copy=False)
     X = MaxAbsScaler().fit_transform(X)
     return X, y
@@ -63,9 +61,9 @@ def _digits_dataset(dtype=np.float32):
 
 @M.cache
 def _synth_regression_dataset(n_samples=1000, n_features=10000,
-                              representation="dense", dtype=np.float32):
+                              representation='dense', dtype=np.float32):
     X, y = make_regression(n_samples=n_samples, n_features=n_features,
-                           n_informative=n_features//10, noise=0.1)
+                           n_informative=n_features // 10, noise=0.1)
     X = X.astype(dtype, copy=False)
 
     if representation is 'sparse':
@@ -83,15 +81,29 @@ def _synth_classification_dataset(n_samples=1000, n_features=10000,
     X, y = make_classification(n_samples=n_samples, n_features=n_features,
                                n_classes=n_classes, random_state=42,
                                n_informative=n_features, n_redundant=0)
-
     X = X.astype(dtype, copy=False)
-
     if representation is 'sparse':
         X[X < 2] = 0
         X = sp.csr_matrix(X)
-
     X = MaxAbsScaler().fit_transform(X)
     return X, y
+
+
+@M.cache
+def olivetti_faces_dataset():
+    """
+    Using example from documentation
+    http://scikit-learn.org/stable/auto_examples/decomposition/plot_faces_decomposition.html#sphx-glr-auto-examples-decomposition-plot-faces-decomposition-py
+    """
+    dataset = fetch_olivetti_faces(shuffle=True, random_state=42)
+    faces = dataset.data
+    n_samples, n_features = faces.shape
+    faces_centered = faces - faces.mean(axis=0)
+    # local centering
+    faces_centered -= faces_centered.mean(axis=1).reshape(n_samples, -1)
+    data = faces_centered
+
+    return data
 
 
 @M.cache

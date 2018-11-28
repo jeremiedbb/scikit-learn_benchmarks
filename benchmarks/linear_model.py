@@ -1,14 +1,16 @@
-from sklearn.linear_model import LogisticRegression, Ridge, ElasticNet, Lasso
+from sklearn.linear_model import (LogisticRegression, Ridge, ElasticNet, Lasso,
+                                  LinearRegression, SGDRegressor)
+
 from .common import Benchmark
 from .datasets import (_20newsgroups_highdim_dataset,
-                       _20newsgroups_lowdim_dataset,
-                       _synth_regression_dataset)
+                       _20newsgroups_lowdim_dataset, _synth_regression_dataset)
 
 
 class LogisticRegression_bench(Benchmark):
     """
     Benchmarks for LogisticRegression.
     """
+
     # params = (representation, solver)
     param_names = ['params'] + Benchmark.param_names
     params = ([('dense', 'lbfgs'),
@@ -56,6 +58,7 @@ class Ridge_bench(Benchmark):
     """
     Benchmarks for Ridge.
     """
+
     # params = (representation)
     param_names = ['params']
     params = ([('dense',),
@@ -80,10 +83,62 @@ class Ridge_bench(Benchmark):
         ridge.fit(self.X, self.y)
 
 
+class LinearRegression_bench(Benchmark):
+    """
+    Benchmarks for Linear Reagression.
+    """
+
+    # params = (representation)
+    param_names = ['params'] + Benchmark.param_names
+    params = ([('dense',),
+               ('sparse',)],) + Benchmark.params
+
+    def setup(self, params, *common):
+        representation = params[0]
+        self.n_jobs = common[0]
+
+        self.X, self.y = _synth_regression_dataset(5000, 100000,
+                                                   representation)
+
+    def time_fit(self, *args):
+        linear_reg = LinearRegression(n_jobs=self.n_jobs)
+        linear_reg.fit(self.X, self.y)
+
+    def peakmem_fit(self, *args):
+        linear_reg = LinearRegression(n_jobs=self.n_jobs)
+        linear_reg.fit(self.X, self.y)
+
+
+class SGDRegressor_bench(Benchmark):
+    """
+    Benchmark for SGD
+    """
+
+    # params = (representation)
+    param_names = ['params']
+    params = ([('dense',),
+               ('sparse',)],)
+
+    def setup(self, params):
+        representation = params[0]
+
+        self.X, self.y = _synth_regression_dataset(5000, 100000,
+                                                   representation)
+
+    def time_fit(self, *args):
+        sgd_reg = SGDRegressor(max_iter=2000, tol=1e-16)
+        sgd_reg.fit(self.X, self.y)
+
+    def peakmem_fit(self, *args):
+        sgd_reg = SGDRegressor(max_iter=2000, tol=1e-16)
+        sgd_reg.fit(self.X, self.y)
+
+
 class ElasticNet_bench(Benchmark):
     """
     Benchmarks for ElasticNet.
     """
+
     # params = (representation, precompute)
     param_names = ['params']
     params = ([('dense', True),
@@ -113,6 +168,7 @@ class Lasso_bench(Benchmark):
     """
     Benchmarks for Lasso.
     """
+
     # params = (representation, precompute)
     param_names = ['params']
     params = ([('dense', True),
