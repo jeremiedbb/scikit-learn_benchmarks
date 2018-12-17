@@ -8,14 +8,19 @@ class TSNE_bench(Benchmark):
     """
     Benchmarks for t-SNE.
     """
-    # params = (method)
-    param_names = []
-    params = ()
 
-    def setup(self):
-        self.X, _ = _digits_dataset()
+    param_names = ['method']
+    params = (['exact', 'barnes_hut'])
 
-        self.tsne_params = {'random_state': 0}
+    def setup(self, *params):
+        method, = params
+
+        n_samples = 500 if method is 'exact' else None
+
+        self.X, _ = _digits_dataset(n_samples=n_samples)
+
+        self.tsne_params = {'random_state': 0,
+                            'method': method}
 
     def time_fit(self, *args):
         tsne = TSNE(**self.tsne_params)
