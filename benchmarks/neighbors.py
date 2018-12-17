@@ -8,27 +8,21 @@ class KNeighborsClassifier_bench(Benchmark):
     """
     Benchmarks for KNeighborsClassifier.
     """
-    # params = (algorithm, wideness)
-    param_names = ['params'] + Benchmark.param_names
-    params = ([('brute', 'high_dim'),
-               ('brute', 'low_dim'),
-               ('kd_tree', 'high_dim'),
-               ('kd_tree', 'low_dim'),
-               ('ball_tree', 'high_dim'),
-               ('ball_tree', 'low_dim')],) + Benchmark.params
 
-    def setup(self, params, *common):
-        algo = params[0]
-        wideness = params[1]
+    param_names = ['algorithm', 'dimension', 'n_jobs']
+    params = (['brute', 'kd_tree', 'ball_tree'],
+              ['high', 'low'],
+              Benchmark.n_jobs_vals)
 
-        n_jobs = common[0]
+    def setup(self, *params):
+        algorithm, dimension, n_jobs = params
 
-        if wideness is 'high_dim':
+        if dimension is 'high':
             self.X, self.y = _20newsgroups_lowdim_dataset(n_components=50)
         else:
             self.X, self.y = _20newsgroups_lowdim_dataset(n_components=10)
 
-        self.knn_params = {'algorithm': algo,
+        self.knn_params = {'algorithm': algorithm,
                            'n_jobs': n_jobs}
 
     def time_fit_predict(self, *args):
