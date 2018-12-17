@@ -12,17 +12,15 @@ class KMeans_bench(Benchmark):
     """
     Benchmarks for KMeans.
     """
-    # params = (representation, algorithm)
-    param_names = ['params'] + Benchmark.param_names
-    params = ([('dense', 'full'),
-               ('dense', 'elkan'),
-               ('sparse', 'full')],) + Benchmark.params
 
-    def setup(self, params, *common):
-        representation = params[0]
-        algo = params[1]
+    param_names = ['representation', 'algorithm', 'n_jobs']
+    params = (['dense', 'sparse'], ['full', 'elkan'], Benchmark.n_jobs_vals)
 
-        n_jobs = common[0]
+    def setup(self, *params):
+        representation, algorithm, n_jobs = params
+
+        if representation is 'sparse' and algorithm is 'elkan':
+            raise NotImplementedError
 
         if representation is 'sparse':
             self.X, _ = _20newsgroups_highdim_dataset()
@@ -34,23 +32,23 @@ class KMeans_bench(Benchmark):
         self.x_squared_norms = row_norms(self.X, squared=True)
 
         self.kmeans_params = {'n_clusters': self.n_clusters,
-                              'algorithm': algo,
+                              'algorithm': algorithm,
                               'n_init': 1,
                               'n_jobs': n_jobs,
                               'random_state': 0}
 
     def time_iterations(self, *args):
-        kmeans = KMeans(init='random', max_iter=10, tol=0,
+        kmeans = KMeans(init='random', max_iter=50, tol=0,
                         **self.kmeans_params)
         kmeans.fit(self.X)
 
     def peakmem_iterations(self, *args):
-        kmeans = KMeans(init='random', max_iter=10, tol=0,
+        kmeans = KMeans(init='random', max_iter=50, tol=0,
                         **self.kmeans_params)
         kmeans.fit(self.X)
 
     def track_iterations(self, *args):
-        kmeans = KMeans(init='random', max_iter=10, tol=0,
+        kmeans = KMeans(init='random', max_iter=50, tol=0,
                         **self.kmeans_params)
         kmeans.fit(self.X)
         return kmeans.n_iter_
@@ -73,12 +71,10 @@ class KMeansPlusPlus_bench(Benchmark):
     """
     Benchmarks for k-means++ init.
     """
-    param_names = []
-    params = []
 
     def setup(self):
-        self.X = _china_dataset()
-        self.n_clusters = 64
+        self.X = _china_dataset(n_samples=None)
+        self.n_clusters = 256
         self.x_squared_norms = row_norms(self.X, squared=True)
 
     def time_kmeansplusplus(self):
