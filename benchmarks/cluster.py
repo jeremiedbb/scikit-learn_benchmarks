@@ -23,10 +23,10 @@ class KMeans_bench(Benchmark):
             raise NotImplementedError
 
         if representation is 'sparse':
-            self.X, _ = _20newsgroups_highdim_dataset()
+            self.X, _ = _20newsgroups_highdim_dataset(n_samples=5000)
             self.n_clusters = 20
         else:
-            self.X = _china_dataset()
+            self.X = _china_dataset(n_samples=200000)
             self.n_clusters = 64
 
         self.x_squared_norms = row_norms(self.X, squared=True)
@@ -73,7 +73,7 @@ class KMeansPlusPlus_bench(Benchmark):
     """
 
     def setup(self):
-        self.X = _china_dataset(n_samples=None)
+        self.X = _china_dataset()
         self.n_clusters = 256
         self.x_squared_norms = row_norms(self.X, squared=True)
 
