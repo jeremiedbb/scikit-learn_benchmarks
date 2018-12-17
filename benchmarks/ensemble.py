@@ -9,15 +9,12 @@ class RandomForestClassifier_bench(Benchmark):
     """
     Benchmarks for RandomForestClassifier.
     """
-    # params = (representation)
-    param_names = ['params'] + Benchmark.param_names
-    params = ([('dense',),
-               ('sparse',)],) + Benchmark.params
 
-    def setup(self, params, *common):
-        representation = params[0]
+    param_names = ['representation', 'n_jobs']
+    params = (['dense', 'sparse'], Benchmark.n_jobs_vals)
 
-        n_jobs = common[0]
+    def setup(self, *params):
+        representation, n_jobs = params
 
         if representation is 'sparse':
             self.X, self.y = _20newsgroups_highdim_dataset()
@@ -43,13 +40,12 @@ class GradientBoostingClassifier_bench(Benchmark):
     """
     Benchmarks for GradientBoostingClassifier.
     """
-    # params = (representation)
-    param_names = ['params']
-    params = ([('dense',),
-               ('sparse',)],)
 
-    def setup(self, params, *common):
-        representation = params[0]
+    param_names = ['representation']
+    params = (['dense', 'sparse'],)
+
+    def setup(self, *params):
+        representation, = params
 
         if representation is 'sparse':
             self.X, self.y = _20newsgroups_highdim_dataset()
