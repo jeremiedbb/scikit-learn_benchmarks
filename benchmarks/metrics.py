@@ -8,26 +8,22 @@ class PairwiseDistances_bench(Benchmark):
     """
     Benchmarks for pairwise distances.
     """
-    # params = (representation, metric)
-    param_names = ['params'] + Benchmark.param_names
-    params = ([('dense', 'cosine'),
-               ('sparse', 'cosine'),
-               ('dense', 'euclidean'),
-               ('sparse', 'euclidean'),
-               ('dense', 'manhattan'),
-               ('sparse', 'manhattan'),
-               ('dense', 'correlation')],) + Benchmark.params
 
-    def setup(self, params, *common):
-        representation = params[0]
-        metric = params[1]
+    param_names = ['representation', 'metric', 'n_jobs']
+    params = (['dense', 'sparse'],
+              ['cosine', 'euclidean', 'manhattan', 'correlation'],
+              Benchmark.n_jobs_vals)
 
-        n_jobs = common[0]
+    def setup(self, *params):
+        representation, metric, n_jobs = params
+
+        if representation is 'sparse' and metric is 'correlation':
+            raise NotImplementedError
 
         if metric in ('manhattan', 'correlation'):
-            n_samples = 2000
+            n_samples = 4000
         else:
-            n_samples = 10000
+            n_samples = 16000
 
         self.X = _random_dataset(n_samples=n_samples,
                                  representation=representation)
