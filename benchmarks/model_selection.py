@@ -10,19 +10,27 @@ class CrossValidation_bench(Benchmark):
     Benchmarks for Cross Validation.
     """
 
-    def setup(self, params):
-        self.n_jobs = params[0]
-        self.X, self.y = _synth_classification_dataset(n_samples=70000,
-                                                       n_features=200,
-                                                       random_state=0)
+    param_names = ['n_jobs']
+    params = (Benchmark.n_jobs_vals,)
 
-    def time_crossval(self, params):
-        clf = RandomForestClassifier(n_estimators=100, random_state=0)
-        cross_val_score(clf, self.X, self.y, n_jobs=self.n_jobs, cv=4)
+    def setup(self, *params):
+        n_jobs, = params
 
-    def peakmem_fit(self, params):
-        clf = RandomForestClassifier(n_estimators=100, random_state=0)
-        cross_val_score(clf, self.X, self.y, n_jobs=self.n_jobs, cv=4)
+        self.X, self.y = _synth_classification_dataset(n_samples=50000,
+                                                       n_features=100)
+
+        self.clf = RandomForestClassifier(n_estimators=50,
+                                          max_depth=10,
+                                          random_state=0)
+
+        self.cv_params = {'n_jobs': n_jobs,
+                          'cv': 4}
+
+    def time_crossval(self, *args):
+        cross_val_score(self.clf, self.X, self.y, **self.cv_params)
+
+    def peakmem_fit(self, *args):
+        cross_val_score(self.clf, self.X, self.y, **self.cv_params)
 
 
 class GridSearch_bench(Benchmark):
@@ -30,26 +38,30 @@ class GridSearch_bench(Benchmark):
     Benchmarks for GridSearch.
     """
 
-    def setup(self, params):
-        self.n_jobs = params[0]
-        self.X, self.y = _synth_classification_dataset(n_samples=70000,
-                                                       n_features=200,
-                                                       random_state=0)
+    timeout = 2000
 
-        self.gs_parameters = {'n_estimators': [10, 50, 100, 500],
-                              'max_depth': [5, 10, None],
-                              'max_features': [0.1, 0.5, 0.8, 1.0]}
+    param_names = ['n_jobs']
+    params = (Benchmark.n_jobs_vals,)
 
-    def time_fit(self, params):
-        # Setup for GridSearchCV
-        clf = RandomForestClassifier(random_state=0)
-        gs_clf = GridSearchCV(clf, self.gs_parameters,
-                              cv=3, n_jobs=self.n_jobs)
+    def setup(self, *params):
+        n_jobs, = params
+
+        self.X, self.y = _synth_classification_dataset(n_samples=10000,
+                                                       n_features=100)
+
+        self.clf = RandomForestClassifier(random_state=0)
+
+        self.param_grid = {'n_estimators': [10, 25, 50],
+                           'max_depth': [5, 10],
+                           'max_features': [0.1, 0.4, 0.8]}
+
+        self.gs_params = {'n_jobs': n_jobs,
+                          'cv': 4}
+
+    def time_fit(self, *args):
+        gs_clf = GridSearchCV(self.clf, self.param_grid, **self.gs_params)
         gs_clf.fit(self.X, self.y)
 
-    def peakmem_fit(self, params):
-        # Setup for GridSearchCV
-        clf = RandomForestClassifier(random_state=0)
-        gs_clf = GridSearchCV(clf, self.gs_parameters,
-                              cv=3, n_jobs=self.n_jobs)
+    def peakmem_fit(self, *args):
+        gs_clf = GridSearchCV(self.clf, self.param_grid, **self.gs_params)
         gs_clf.fit(self.X, self.y)
