@@ -12,20 +12,14 @@ class LogisticRegression_bench(Benchmark):
     """
 
     # params = (representation, solver)
-    param_names = ['params'] + Benchmark.param_names
-    params = ([('dense', 'lbfgs'),
-               ('dense', 'saga'),
-               ('sparse', 'lbfgs'),
-               ('sparse', 'saga')],) + Benchmark.params
+    param_names = ['representation', 'solver', 'n_jobs']
+    params = (['dense', 'sparse'], ['lbfgs', 'saga'], Benchmark.n_jobs_vals)
 
-    def setup(self, params, *common):
-        representation = params[0]
-        solver = params[1]
-
-        n_jobs = common[0]
+    def setup(self, *params):
+        representation, solver, n_jobs = params
 
         if representation is 'sparse':
-            self.X, self.y = _20newsgroups_highdim_dataset()
+            self.X, self.y = _20newsgroups_highdim_dataset(n_samples=2500)
         else:
             self.X, self.y = _20newsgroups_lowdim_dataset()
 
@@ -59,16 +53,17 @@ class Ridge_bench(Benchmark):
     Benchmarks for Ridge.
     """
 
-    # params = (representation)
-    param_names = ['params']
-    params = ([('dense',),
-               ('sparse',)],)
+    param_names = ['representation']
+    params = (['dense', 'sparse'],)
 
-    def setup(self, params):
-        representation = params[0]
+    def setup(self, *params):
+        representation, = params
 
-        self.X, self.y = _synth_regression_dataset(5000, 100000,
-                                                   representation)
+        if representation is 'dense':
+            self.X, self.y = _synth_regression_dataset(n_samples=1000000,
+                                                       n_features=500)
+        else:
+            self.X, self.y = _20newsgroups_highdim_dataset(ngrams=(1, 5))
 
         self.ridge_params = {'solver': 'lsqr',
                              'fit_intercept': False,
@@ -88,24 +83,24 @@ class LinearRegression_bench(Benchmark):
     Benchmarks for Linear Reagression.
     """
 
-    # params = (representation)
-    param_names = ['params'] + Benchmark.param_names
-    params = ([('dense',),
-               ('sparse',)],) + Benchmark.params
+    param_names = ['representation']
+    params = (['dense', 'sparse'],)
 
-    def setup(self, params, *common):
-        representation = params[0]
-        self.n_jobs = common[0]
+    def setup(self, *params):
+        representation, = params
 
-        self.X, self.y = _synth_regression_dataset(5000, 100000,
-                                                   representation)
+        if representation is 'dense':
+            self.X, self.y = _synth_regression_dataset(n_samples=1000000,
+                                                       n_features=100)
+        else:
+            self.X, self.y = _20newsgroups_highdim_dataset(n_samples=5000)
 
     def time_fit(self, *args):
-        linear_reg = LinearRegression(n_jobs=self.n_jobs)
+        linear_reg = LinearRegression()
         linear_reg.fit(self.X, self.y)
 
     def peakmem_fit(self, *args):
-        linear_reg = LinearRegression(n_jobs=self.n_jobs)
+        linear_reg = LinearRegression()
         linear_reg.fit(self.X, self.y)
 
 
@@ -114,23 +109,27 @@ class SGDRegressor_bench(Benchmark):
     Benchmark for SGD
     """
 
-    # params = (representation)
-    param_names = ['params']
-    params = ([('dense',),
-               ('sparse',)],)
+    param_names = ['representation']
+    params = (['dense', 'sparse'],)
 
-    def setup(self, params):
-        representation = params[0]
+    def setup(self, *params):
+        representation, = params
 
-        self.X, self.y = _synth_regression_dataset(5000, 100000,
-                                                   representation)
+        if representation is 'dense':
+            self.X, self.y = _synth_regression_dataset(n_samples=100000,
+                                                       n_features=100)
+        else:
+            self.X, self.y = _20newsgroups_highdim_dataset(n_samples=5000)
+
+        self.sgdr_params = {'max_iter': 1000,
+                            'tol': 1e-16}
 
     def time_fit(self, *args):
-        sgd_reg = SGDRegressor(max_iter=2000, tol=1e-16)
+        sgd_reg = SGDRegressor(**self.sgdr_params)
         sgd_reg.fit(self.X, self.y)
 
     def peakmem_fit(self, *args):
-        sgd_reg = SGDRegressor(max_iter=2000, tol=1e-16)
+        sgd_reg = SGDRegressor(**self.sgdr_params)
         sgd_reg.fit(self.X, self.y)
 
 
@@ -139,18 +138,17 @@ class ElasticNet_bench(Benchmark):
     Benchmarks for ElasticNet.
     """
 
-    # params = (representation, precompute)
-    param_names = ['params']
-    params = ([('dense', True),
-               ('dense', False),
-               ('sparse', True),
-               ('sparse', False)],)
+    param_names = ['representation', 'precompute']
+    params = (['dense', 'sparse'], [True, False])
 
-    def setup(self, params):
-        representation = params[0]
-        precompute = params[1]
+    def setup(self, *params):
+        representation, precompute = params
 
-        self.X, self.y = _synth_regression_dataset(1000, 10000, representation)
+        if representation is 'dense':
+            self.X, self.y = _synth_regression_dataset(n_samples=1000000,
+                                                       n_features=100)
+        else:
+            self.X, self.y = _20newsgroups_highdim_dataset()
 
         self.en_params = {'precompute': precompute,
                           'random_state': 0}
@@ -169,18 +167,17 @@ class Lasso_bench(Benchmark):
     Benchmarks for Lasso.
     """
 
-    # params = (representation, precompute)
-    param_names = ['params']
-    params = ([('dense', True),
-               ('dense', False),
-               ('sparse', True),
-               ('sparse', False)],)
+    param_names = ['representation', 'precompute']
+    params = (['dense', 'sparse'], [True, False])
 
-    def setup(self, params):
-        representation = params[0]
-        precompute = params[1]
+    def setup(self, *params):
+        representation, precompute = params
 
-        self.X, self.y = _synth_regression_dataset(1000, 10000, representation)
+        if representation is 'dense':
+            self.X, self.y = _synth_regression_dataset(n_samples=1000000,
+                                                       n_features=100)
+        else:
+            self.X, self.y = _20newsgroups_highdim_dataset()
 
         self.lasso_params = {'precompute': precompute,
                              'random_state': 0}
