@@ -1,26 +1,38 @@
 import os
+from multiprocessing import cpu_count
+import json
 import timeit
-"""
-if environment variable $MULTICORE is set, benchmarks will be run for
-n_jobs vals = (1, $MULTICORE). Otherwise for n_jobs vals = (1, -1)
-MULTICORE can be a list of values as well.
-Example: export MULTICORE=2,3,4,5
-"""
 
-N_JOBS_VALS = [1, -1]
 
-if os.getenv('MULTICORE'):
-    multicore = os.getenv('MULTICORE')
-    N_JOBS_VALS = list(map(int, multicore.split(',')))
+CONFIG_PATH = os.path.dirname(os.path.realpath(__file__))+"/config.json"
 
 
 class Benchmark:
+
     timer = timeit.default_timer  # wall time
     warmup_time = 1
-    timeout = 500
     processes = 1
-    sample_time = 0.5
-    repeat = (3, 100, 120.0)
+    timeout = 500
 
-    param_names = ['n_jobs']
-    params = (N_JOBS_VALS,)
+    # get common attributes from config file
+    with open(CONFIG_PATH, 'r') as config_file:
+        config_file = "".join(line for line in config_file
+                              if line and '//' not in line)
+        config = json.loads(config_file)
+
+        profile = config['profile']
+
+        n_jobs_vals = config['n_jobs_vals']
+        if not n_jobs_vals:
+            n_jobs_vals = list(range(1, 1 + cpu_count()))
+
+    if profile is 'fast':
+        repeat = 1
+        number = 1
+        data_size = 'small'
+    elif profile is 'regular':
+        repeat = (3, 100, 30.0)
+        data_size = 'small'
+    elif profile is 'large_scale':
+        # repeat = (3, ?, ?)
+        data_size = 'large'
