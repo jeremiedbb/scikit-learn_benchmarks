@@ -26,13 +26,13 @@ class Benchmark:
         if not n_jobs_vals:
             n_jobs_vals = list(range(1, 1 + cpu_count()))
 
-    if profile is 'fast':
+    if profile == 'fast':
         repeat = 1
         number = 1
         data_size = 'small'
-    elif profile is 'regular':
+    elif profile == 'regular':
         repeat = (3, 100, 30.0)
         data_size = 'small'
-    elif profile is 'large_scale':
+    elif profile == 'large_scale':
         # repeat = (3, ?, ?)
         data_size = 'large'
