@@ -22,12 +22,20 @@ class KMeans_bench(Benchmark):
         if representation is 'sparse' and algorithm is 'elkan':
             raise NotImplementedError
 
-        if representation is 'sparse':
-            self.X, _ = _20newsgroups_highdim_dataset(n_samples=5000)
-            self.n_clusters = 20
+        if Benchmark.data_size == 'large':
+            if representation is 'sparse':
+                self.X, _ = _20newsgroups_highdim_dataset(ngrams=(1, 2))
+                self.n_clusters = 20
+            else:
+                self.X = _china_dataset()
+                self.n_clusters = 256
         else:
-            self.X = _china_dataset(n_samples=200000)
-            self.n_clusters = 64
+            if representation is 'sparse':
+                self.X, _ = _20newsgroups_highdim_dataset(n_samples=5000)
+                self.n_clusters = 20
+            else:
+                self.X = _china_dataset(n_samples=200000)
+                self.n_clusters = 64
 
         self.x_squared_norms = row_norms(self.X, squared=True)
 

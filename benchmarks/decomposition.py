@@ -2,7 +2,7 @@ from sklearn.decomposition import (PCA, DictionaryLearning,
                                    MiniBatchDictionaryLearning)
 
 from .common import Benchmark
-from .datasets import olivetti_faces_dataset, _mnist_dataset
+from .datasets import _olivetti_faces_dataset, _mnist_dataset
 
 
 class PCA_bench(Benchmark):
@@ -42,7 +42,7 @@ class DictionaryLearning_bench(Benchmark):
     def setup(self, *params):
         fit_algorithm, n_jobs = params
 
-        self.data = olivetti_faces_dataset()
+        self.data = _olivetti_faces_dataset()
 
         self.dl_params = {'n_components': 15,
                           'fit_algorithm': fit_algorithm,
@@ -72,7 +72,7 @@ class MiniBatchDictionaryLearning_bench(Benchmark):
     def setup(self, *params):
         fit_algorithm, n_jobs = params
 
-        self.data = olivetti_faces_dataset()
+        self.data = _olivetti_faces_dataset()
 
         self.dl_params = {'n_components': 15,
                           'fit_algorithm': fit_algorithm,

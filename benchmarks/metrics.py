@@ -20,10 +20,16 @@ class PairwiseDistances_bench(Benchmark):
         if representation is 'sparse' and metric is 'correlation':
             raise NotImplementedError
 
-        if metric in ('manhattan', 'correlation'):
-            n_samples = 4000
+        if Benchmark.data_size == 'large':
+            if metric in ('manhattan', 'correlation'):
+                n_samples = 8000
+            else:
+                n_samples = 32000
         else:
-            n_samples = 16000
+            if metric in ('manhattan', 'correlation'):
+                n_samples = 4000
+            else:
+                n_samples = 16000
 
         self.X = _random_dataset(n_samples=n_samples,
                                  representation=representation)

@@ -11,17 +11,22 @@ class LogisticRegression_bench(Benchmark):
     Benchmarks for LogisticRegression.
     """
 
-    # params = (representation, solver)
     param_names = ['representation', 'solver', 'n_jobs']
     params = (['dense', 'sparse'], ['lbfgs', 'saga'], Benchmark.n_jobs_vals)
 
     def setup(self, *params):
         representation, solver, n_jobs = params
 
-        if representation is 'sparse':
-            self.X, self.y = _20newsgroups_highdim_dataset(n_samples=2500)
+        if Benchmark.data_size == 'large':
+            if representation is 'sparse':
+                self.X, self.y = _20newsgroups_highdim_dataset(n_samples=10000)
+            else:
+                self.X, self.y = _20newsgroups_lowdim_dataset(n_components=1e3)
         else:
-            self.X, self.y = _20newsgroups_lowdim_dataset()
+            if representation is 'sparse':
+                self.X, self.y = _20newsgroups_highdim_dataset(n_samples=2500)
+            else:
+                self.X, self.y = _20newsgroups_lowdim_dataset()
 
         if solver is 'lbfgs':
             self.lr_params = {'penalty': 'l2'}

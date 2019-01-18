@@ -11,16 +11,18 @@ class KNeighborsClassifier_bench(Benchmark):
 
     param_names = ['algorithm', 'dimension', 'n_jobs']
     params = (['brute', 'kd_tree', 'ball_tree'],
-              ['high', 'low'],
+              ['low', 'high'],
               Benchmark.n_jobs_vals)
 
     def setup(self, *params):
         algorithm, dimension, n_jobs = params
 
-        if dimension is 'high':
-            self.X, self.y = _20newsgroups_lowdim_dataset(n_components=50)
+        if Benchmark.data_size == 'large':
+            nc = 40 if dimension is 'low' else 200
         else:
-            self.X, self.y = _20newsgroups_lowdim_dataset(n_components=10)
+            nc = 10 if dimension is 'low' else 50
+
+        self.X, self.y = _20newsgroups_lowdim_dataset(n_components=nc)
 
         self.knn_params = {'algorithm': algorithm,
                            'n_jobs': n_jobs}

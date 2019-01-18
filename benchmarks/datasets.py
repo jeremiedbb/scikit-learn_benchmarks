@@ -25,7 +25,7 @@ def _china_dataset(n_samples=None, dtype=np.float32):
 def _20newsgroups_highdim_dataset(n_samples=None, ngrams=(1, 1),
                                   dtype=np.float32):
     newsgroups = fetch_20newsgroups()
-    vectorizer = TfidfVectorizer(min_df=2, max_df=0.9, ngram_range=ngrams)
+    vectorizer = TfidfVectorizer(ngram_range=ngrams)
     X = vectorizer.fit_transform(newsgroups.data[:n_samples])
     X = X.astype(dtype, copy=False)
     y = newsgroups.target[:n_samples]
@@ -33,9 +33,10 @@ def _20newsgroups_highdim_dataset(n_samples=None, ngrams=(1, 1),
 
 
 @M.cache
-def _20newsgroups_lowdim_dataset(n_components=100, dtype=np.float32):
+def _20newsgroups_lowdim_dataset(n_components=100, ngrams=(1, 1),
+                                 dtype=np.float32):
     newsgroups = fetch_20newsgroups()
-    vectorizer = TfidfVectorizer(min_df=2, max_df=0.9)
+    vectorizer = TfidfVectorizer(ngram_range=ngrams)
     X = vectorizer.fit_transform(newsgroups.data)
     X = X.astype(dtype, copy=False)
     svd = TruncatedSVD(n_components=n_components)
@@ -83,7 +84,7 @@ def _synth_classification_dataset(n_samples=1000, n_features=10000,
 
 
 @M.cache
-def olivetti_faces_dataset():
+def _olivetti_faces_dataset():
     """
     Using example from documentation
     http://scikit-learn.org/stable/auto_examples/decomposition/plot_faces_decomposition.html#sphx-glr-auto-examples-decomposition-plot-faces-decomposition-py

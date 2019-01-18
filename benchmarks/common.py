@@ -34,5 +34,5 @@ class Benchmark:
         repeat = (3, 100, 30.0)
         data_size = 'small'
     elif profile == 'large_scale':
-        # repeat = (3, ?, ?)
+        repeat = 3
         data_size = 'large'

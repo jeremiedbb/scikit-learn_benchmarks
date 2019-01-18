@@ -10,6 +10,8 @@ class CrossValidation_bench(Benchmark):
     Benchmarks for Cross Validation.
     """
 
+    timeout = 20000
+
     param_names = ['n_jobs']
     params = (Benchmark.n_jobs_vals,)
 
@@ -23,8 +25,10 @@ class CrossValidation_bench(Benchmark):
                                           max_depth=10,
                                           random_state=0)
 
+        cv = 16 if Benchmark.data_size == 'large' else 4
+
         self.cv_params = {'n_jobs': n_jobs,
-                          'cv': 4}
+                          'cv': cv}
 
     def time_crossval(self, *args):
         cross_val_score(self.clf, self.X, self.y, **self.cv_params)
@@ -38,7 +42,7 @@ class GridSearch_bench(Benchmark):
     Benchmarks for GridSearch.
     """
 
-    timeout = 2000
+    timeout = 20000
 
     param_names = ['n_jobs']
     params = (Benchmark.n_jobs_vals,)
@@ -54,6 +58,11 @@ class GridSearch_bench(Benchmark):
         self.param_grid = {'n_estimators': [10, 25, 50],
                            'max_depth': [5, 10],
                            'max_features': [0.1, 0.4, 0.8]}
+
+        if Benchmark.data_size == 'large':
+            self.param_grid['n_estimators'].append([100, 500])
+            self.param_grid['max_depth'].append(None)
+            self.param_grid['max_features'].append(1.0)
 
         self.gs_params = {'n_jobs': n_jobs,
                           'cv': 4}
