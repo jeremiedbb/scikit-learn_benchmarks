@@ -68,7 +68,7 @@ class Ridge_bench(Benchmark):
             self.X, self.y = _synth_regression_dataset(n_samples=100000,
                                                        n_features=500)
         else:
-            self.X, self.y = _20newsgroups_highdim_dataset(ngrams=(1, 5))
+            self.X, self.y = _20newsgroups_highdim_dataset(ngrams=(1, 3))
 
         self.ridge_params = {'solver': 'saga',
                              'fit_intercept': False,
