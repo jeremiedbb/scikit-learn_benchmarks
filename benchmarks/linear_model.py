@@ -70,7 +70,7 @@ class Ridge_bench(Benchmark):
         else:
             self.X, self.y = _20newsgroups_highdim_dataset(ngrams=(1, 5))
 
-        self.ridge_params = {'solver': 'lsqr',
+        self.ridge_params = {'solver': 'saga',
                              'fit_intercept': False,
                              'random_state': 0}
 
