@@ -65,7 +65,7 @@ class Ridge_bench(Benchmark):
         representation, = params
 
         if representation is 'dense':
-            self.X, self.y = _synth_regression_dataset(n_samples=1000000,
+            self.X, self.y = _synth_regression_dataset(n_samples=500000,
                                                        n_features=500)
         else:
             self.X, self.y = _20newsgroups_highdim_dataset(ngrams=(1, 5))
