@@ -18,17 +18,17 @@ class LogisticRegression_bench(Benchmark):
         representation, solver, n_jobs = params
 
         if Benchmark.data_size == 'large':
-            if representation is 'sparse':
+            if representation == 'sparse':
                 self.X, self.y = _20newsgroups_highdim_dataset(n_samples=10000)
             else:
                 self.X, self.y = _20newsgroups_lowdim_dataset(n_components=1e3)
         else:
-            if representation is 'sparse':
+            if representation == 'sparse':
                 self.X, self.y = _20newsgroups_highdim_dataset(n_samples=2500)
             else:
                 self.X, self.y = _20newsgroups_lowdim_dataset()
 
-        if solver is 'lbfgs':
+        if solver == 'lbfgs':
             self.lr_params = {'penalty': 'l2'}
         else:
             self.lr_params = {'penalty': 'l1'}
@@ -64,7 +64,7 @@ class Ridge_bench(Benchmark):
     def setup(self, *params):
         representation, = params
 
-        if representation is 'dense':
+        if representation == 'dense':
             self.X, self.y = _synth_regression_dataset(n_samples=100000,
                                                        n_features=500)
         else:
@@ -94,7 +94,7 @@ class LinearRegression_bench(Benchmark):
     def setup(self, *params):
         representation, = params
 
-        if representation is 'dense':
+        if representation == 'dense':
             self.X, self.y = _synth_regression_dataset(n_samples=1000000,
                                                        n_features=100)
         else:
@@ -120,7 +120,7 @@ class SGDRegressor_bench(Benchmark):
     def setup(self, *params):
         representation, = params
 
-        if representation is 'dense':
+        if representation == 'dense':
             self.X, self.y = _synth_regression_dataset(n_samples=100000,
                                                        n_features=100)
         else:
@@ -149,7 +149,7 @@ class ElasticNet_bench(Benchmark):
     def setup(self, *params):
         representation, precompute = params
 
-        if representation is 'dense':
+        if representation == 'dense':
             self.X, self.y = _synth_regression_dataset(n_samples=1000000,
                                                        n_features=100)
         else:
@@ -178,7 +178,7 @@ class Lasso_bench(Benchmark):
     def setup(self, *params):
         representation, precompute = params
 
-        if representation is 'dense':
+        if representation == 'dense':
             self.X, self.y = _synth_regression_dataset(n_samples=1000000,
                                                        n_features=100)
         else:

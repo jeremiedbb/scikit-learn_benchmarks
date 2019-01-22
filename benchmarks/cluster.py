@@ -19,18 +19,18 @@ class KMeans_bench(Benchmark):
     def setup(self, *params):
         representation, algorithm, n_jobs = params
 
-        if representation is 'sparse' and algorithm is 'elkan':
+        if representation == 'sparse' and algorithm == 'elkan':
             raise NotImplementedError
 
         if Benchmark.data_size == 'large':
-            if representation is 'sparse':
+            if representation == 'sparse':
                 self.X, _ = _20newsgroups_highdim_dataset(ngrams=(1, 2))
                 self.n_clusters = 20
             else:
                 self.X = _china_dataset()
                 self.n_clusters = 256
         else:
-            if representation is 'sparse':
+            if representation == 'sparse':
                 self.X, _ = _20newsgroups_highdim_dataset(n_samples=5000)
                 self.n_clusters = 20
             else:

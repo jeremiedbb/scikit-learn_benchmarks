@@ -18,7 +18,7 @@ class RandomForestClassifier_bench(Benchmark):
 
         n_estimators = 500 if Benchmark.data_size == 'large' else 100
 
-        if representation is 'sparse':
+        if representation == 'sparse':
             self.X, self.y = _20newsgroups_highdim_dataset()
         else:
             self.X, self.y = _20newsgroups_lowdim_dataset()
@@ -51,7 +51,7 @@ class GradientBoostingClassifier_bench(Benchmark):
 
         n_estimators = 100 if Benchmark.data_size == 'large' else 10
 
-        if representation is 'sparse':
+        if representation == 'sparse':
             self.X, self.y = _20newsgroups_highdim_dataset()
         else:
             self.X, self.y = _20newsgroups_lowdim_dataset()

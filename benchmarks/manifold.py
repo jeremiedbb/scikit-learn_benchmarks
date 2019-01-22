@@ -15,7 +15,7 @@ class TSNE_bench(Benchmark):
     def setup(self, *params):
         method, = params
 
-        n_samples = 500 if method is 'exact' else None
+        n_samples = 500 if method == 'exact' else None
 
         self.X, _ = _digits_dataset(n_samples=n_samples)
 

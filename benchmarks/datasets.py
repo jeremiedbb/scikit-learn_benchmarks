@@ -103,7 +103,7 @@ def _olivetti_faces_dataset():
 @M.cache
 def _random_dataset(n_samples=1000, n_features=1000,
                     representation='dense', dtype=np.float32):
-    if representation is 'dense':
+    if representation == 'dense':
         X = np.random.random_sample((n_samples, n_features))
         X = X.astype(dtype, copy=False)
     else:

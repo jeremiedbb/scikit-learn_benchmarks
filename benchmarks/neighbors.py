@@ -18,9 +18,9 @@ class KNeighborsClassifier_bench(Benchmark):
         algorithm, dimension, n_jobs = params
 
         if Benchmark.data_size == 'large':
-            nc = 40 if dimension is 'low' else 200
+            nc = 40 if dimension == 'low' else 200
         else:
-            nc = 10 if dimension is 'low' else 50
+            nc = 10 if dimension == 'low' else 50
 
         self.X, self.y = _20newsgroups_lowdim_dataset(n_components=nc)
 

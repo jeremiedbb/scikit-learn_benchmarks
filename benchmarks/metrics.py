@@ -17,7 +17,7 @@ class PairwiseDistances_bench(Benchmark):
     def setup(self, *params):
         representation, metric, n_jobs = params
 
-        if representation is 'sparse' and metric is 'correlation':
+        if representation == 'sparse' and metric == 'correlation':
             raise NotImplementedError
 
         if Benchmark.data_size == 'large':
