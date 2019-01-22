@@ -24,12 +24,12 @@ class PairwiseDistances_bench(Benchmark):
             if metric in ('manhattan', 'correlation'):
                 n_samples = 8000
             else:
-                n_samples = 32000
+                n_samples = 24000
         else:
             if metric in ('manhattan', 'correlation'):
                 n_samples = 4000
             else:
-                n_samples = 16000
+                n_samples = 12000
 
         self.X = _random_dataset(n_samples=n_samples,
                                  representation=representation)
