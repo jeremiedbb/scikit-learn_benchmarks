@@ -42,7 +42,7 @@ class DictionaryLearning_bench(Benchmark):
     def setup(self, *params):
         fit_algorithm, n_jobs = params
 
-        self.data = _olivetti_faces_dataset()
+        self.X = _olivetti_faces_dataset()
 
         self.dl_params = {'n_components': 15,
                           'fit_algorithm': fit_algorithm,
@@ -54,11 +54,11 @@ class DictionaryLearning_bench(Benchmark):
 
     def time_fit(self, *args):
         dict_learning = DictionaryLearning(**self.dl_params)
-        dict_learning.fit(self.data)
+        dict_learning.fit(self.X)
 
     def peakmem_fit(self, *args):
         dict_learning = DictionaryLearning(**self.dl_params)
-        dict_learning.fit(self.data)
+        dict_learning.fit(self.X)
 
 
 class MiniBatchDictionaryLearning_bench(Benchmark):
@@ -72,7 +72,7 @@ class MiniBatchDictionaryLearning_bench(Benchmark):
     def setup(self, *params):
         fit_algorithm, n_jobs = params
 
-        self.data = _olivetti_faces_dataset()
+        self.X = _olivetti_faces_dataset()
 
         self.dl_params = {'n_components': 15,
                           'fit_algorithm': fit_algorithm,
@@ -83,8 +83,8 @@ class MiniBatchDictionaryLearning_bench(Benchmark):
 
     def time_fit(self, *args):
         dict_learning = MiniBatchDictionaryLearning(**self.dl_params)
-        dict_learning.fit(self.data)
+        dict_learning.fit(self.X)
 
     def peakmem_fit(self, *args):
         dict_learning = MiniBatchDictionaryLearning(**self.dl_params)
-        dict_learning.fit(self.data)
+        dict_learning.fit(self.X)
