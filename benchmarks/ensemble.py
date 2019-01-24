@@ -1,11 +1,11 @@
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 
-from .common import Benchmark
+from .common import Benchmark, Predictor
 from .datasets import (_20newsgroups_highdim_dataset,
                        _20newsgroups_lowdim_dataset)
 
 
-class RandomForestClassifier_bench(Benchmark):
+class RandomForestClassifier_bench(Benchmark, Predictor):
     """
     Benchmarks for RandomForestClassifier.
     """
@@ -19,26 +19,21 @@ class RandomForestClassifier_bench(Benchmark):
         n_estimators = 500 if Benchmark.data_size == 'large' else 100
 
         if representation == 'sparse':
-            self.X, self.y = _20newsgroups_highdim_dataset()
+            data = _20newsgroups_highdim_dataset()
         else:
-            self.X, self.y = _20newsgroups_lowdim_dataset()
+            data = _20newsgroups_lowdim_dataset()
+        self.X, _, self.y, self.y_val = data
 
-        self.rf_params = {'n_estimators': n_estimators,
-                          'min_samples_split': 10,
-                          'max_features': 'log2',
-                          'n_jobs': n_jobs,
-                          'random_state': 0}
+        self.estimator = RandomForestClassifier(n_estimators=n_estimators,
+                                                min_samples_split=10,
+                                                max_features='log2',
+                                                n_jobs=n_jobs,
+                                                random_state=0)
 
-    def time_fit(self, *args):
-        rf = RandomForestClassifier(**self.rf_params)
-        rf.fit(self.X, self.y)
-
-    def peakmem_fit(self, *args):
-        rf = RandomForestClassifier(**self.rf_params)
-        rf.fit(self.X, self.y)
+        self.estimator.fit(self.X, self.y)
 
 
-class GradientBoostingClassifier_bench(Benchmark):
+class GradientBoostingClassifier_bench(Benchmark, Predictor):
     """
     Benchmarks for GradientBoostingClassifier.
     """
@@ -52,19 +47,14 @@ class GradientBoostingClassifier_bench(Benchmark):
         n_estimators = 100 if Benchmark.data_size == 'large' else 10
 
         if representation == 'sparse':
-            self.X, self.y = _20newsgroups_highdim_dataset()
+            data = _20newsgroups_highdim_dataset()
         else:
-            self.X, self.y = _20newsgroups_lowdim_dataset()
+            data = _20newsgroups_lowdim_dataset()
+        self.X, _, self.y, self.y_val = data
 
-        self.gb_params = {'n_estimators': n_estimators,
-                          'max_features': 'log2',
-                          'subsample': 0.5,
-                          'random_state': 0}
+        self.estimator = GradientBoostingClassifier(n_estimators=n_estimators,
+                                                    max_features='log2',
+                                                    subsample=0.5,
+                                                    random_state=0)
 
-    def time_fit(self, *args):
-        gb = GradientBoostingClassifier(**self.gb_params)
-        gb.fit(self.X, self.y)
-
-    def peakmem_fit(self, *args):
-        gb = GradientBoostingClassifier(**self.gb_params)
-        gb.fit(self.X, self.y)
+        self.estimator.fit(self.X, self.y)
