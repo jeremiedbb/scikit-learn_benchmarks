@@ -8,6 +8,7 @@ from sklearn.datasets import (load_sample_image, fetch_20newsgroups,
                               make_classification, fetch_olivetti_faces)
 from sklearn.preprocessing import MaxAbsScaler, StandardScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
 
 # memory location for caching datasets
 M = Memory(location='/tmp/joblib')
@@ -18,7 +19,9 @@ def _china_dataset(n_samples=None, dtype=np.float32):
     img = load_sample_image('china.jpg')
     X = np.array(img, dtype=dtype) / 255
     X = X.reshape((-1, 3))[:n_samples]
-    return X
+
+    X_train, X_test = train_test_split(X, test_size=0.1, random_state=0)
+    return X_train, X_test
 
 
 @M.cache
@@ -29,7 +32,10 @@ def _20newsgroups_highdim_dataset(n_samples=None, ngrams=(1, 1),
     X = vectorizer.fit_transform(newsgroups.data[:n_samples])
     X = X.astype(dtype, copy=False)
     y = newsgroups.target[:n_samples]
-    return X, y
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1,
+                                                        random_state=0)
+    return X_train, X_test, y_train, y_test
 
 
 @M.cache
@@ -42,7 +48,10 @@ def _20newsgroups_lowdim_dataset(n_components=100, ngrams=(1, 1),
     svd = TruncatedSVD(n_components=n_components)
     X = svd.fit_transform(X)
     y = newsgroups.target
-    return X, y
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1,
+                                                        random_state=0)
+    return X_train, X_test, y_train, y_test
 
 
 @M.cache
@@ -50,7 +59,10 @@ def _mnist_dataset(dtype=np.float32):
     X, y = fetch_openml('mnist_784', version=1, return_X_y=True)
     X = X.astype(dtype, copy=False)
     X = MaxAbsScaler().fit_transform(X)
-    return X, y
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1,
+                                                        random_state=0)
+    return X_train, X_test, y_train, y_test
 
 
 @M.cache
@@ -58,7 +70,12 @@ def _digits_dataset(n_samples=None, dtype=np.float32):
     X, y = load_digits(return_X_y=True)
     X = X.astype(dtype, copy=False)
     X = MaxAbsScaler().fit_transform(X)
-    return X[:n_samples], y[:n_samples]
+    X = X[:n_samples]
+    y = y[:n_samples]
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1,
+                                                        random_state=0)
+    return X_train, X_test, y_train, y_test
 
 
 @M.cache
@@ -69,7 +86,10 @@ def _synth_regression_dataset(n_samples=1000, n_features=10000,
                            random_state=0)
     X = X.astype(dtype, copy=False)
     X = StandardScaler().fit_transform(X)
-    return X, y
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1,
+                                                        random_state=0)
+    return X_train, X_test, y_train, y_test
 
 
 @M.cache
@@ -80,7 +100,10 @@ def _synth_classification_dataset(n_samples=1000, n_features=10000,
                                n_informative=n_features, n_redundant=0)
     X = X.astype(dtype, copy=False)
     X = StandardScaler().fit_transform(X)
-    return X, y
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1,
+                                                        random_state=0)
+    return X_train, X_test, y_train, y_test
 
 
 @M.cache
@@ -95,9 +118,10 @@ def _olivetti_faces_dataset():
     faces_centered = faces - faces.mean(axis=0)
     # local centering
     faces_centered -= faces_centered.mean(axis=1).reshape(n_samples, -1)
-    data = faces_centered
+    X = faces_centered
 
-    return data
+    X_train, X_test = train_test_split(X, test_size=0.1, random_state=0)
+    return X_train, X_test
 
 
 @M.cache
@@ -108,4 +132,6 @@ def _random_dataset(n_samples=1000, n_features=1000,
         X = X.astype(dtype, copy=False)
     else:
         X = sp.random(n_samples, n_features, format='csr', dtype=dtype)
-    return X
+
+    X_train, X_test = train_test_split(X, test_size=0.1, random_state=0)
+    return X_train, X_test
