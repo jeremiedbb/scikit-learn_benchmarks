@@ -1,7 +1,7 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV, cross_val_score
 
-from .common import Benchmark
+from .common import Benchmark, Estimator_bench
 from .datasets import _synth_classification_dataset
 
 
@@ -18,8 +18,8 @@ class CrossValidation_bench(Benchmark):
     def setup(self, *params):
         n_jobs, = params
 
-        self.X, self.y = _synth_classification_dataset(n_samples=50000,
-                                                       n_features=100)
+        self.X, _, self.y, _ = _synth_classification_dataset(n_samples=50000,
+                                                             n_features=100)
 
         self.clf = RandomForestClassifier(n_estimators=50,
                                           max_depth=10,
@@ -37,7 +37,7 @@ class CrossValidation_bench(Benchmark):
         cross_val_score(self.clf, self.X, self.y, **self.cv_params)
 
 
-class GridSearch_bench(Benchmark):
+class GridSearch_bench(Benchmark, Estimator_bench):
     """
     Benchmarks for GridSearch.
     """
@@ -50,27 +50,24 @@ class GridSearch_bench(Benchmark):
     def setup(self, *params):
         n_jobs, = params
 
-        self.X, self.y = _synth_classification_dataset(n_samples=10000,
-                                                       n_features=100)
+        self.X, _, self.y, _ = _synth_classification_dataset(n_samples=10000,
+                                                             n_features=100)
 
-        self.clf = RandomForestClassifier(random_state=0)
-
-        self.param_grid = {'n_estimators': [10, 25, 50],
-                           'max_depth': [5, 10],
-                           'max_features': [0.1, 0.4, 0.8]}
+        clf = RandomForestClassifier(random_state=0)
 
         if Benchmark.data_size == 'large':
-            self.param_grid['n_estimators'].append([100, 500])
-            self.param_grid['max_depth'].append(None)
-            self.param_grid['max_features'].append(1.0)
+            n_estimators_list = [10, 25, 50, 100, 500]
+            max_depth_list = [5, 10, None]
+            max_features_list = [0.1, 0.4, 0.8, 1.0]
+        else:
+            n_estimators_list = [10, 25, 50]
+            max_depth_list = [5, 10]
+            max_features_list = [0.1, 0.4, 0.8]
 
-        self.gs_params = {'n_jobs': n_jobs,
-                          'cv': 4}
+        param_grid = {'n_estimators': n_estimators_list,
+                      'max_depth': max_depth_list,
+                      'max_features': max_features_list}
 
-    def time_fit(self, *args):
-        gs_clf = GridSearchCV(self.clf, self.param_grid, **self.gs_params)
-        gs_clf.fit(self.X, self.y)
+        self.estimator = GridSearchCV(clf, param_grid, n_jobs=n_jobs, cv=4)
 
-    def peakmem_fit(self, *args):
-        gs_clf = GridSearchCV(self.clf, self.param_grid, **self.gs_params)
-        gs_clf.fit(self.X, self.y)
+        self.estimator.fit(self.X, self.y)

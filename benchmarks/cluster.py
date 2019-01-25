@@ -4,11 +4,13 @@ from sklearn.cluster import KMeans
 from sklearn.cluster.k_means_ import _k_init
 from sklearn.utils.extmath import row_norms
 
-from .common import Benchmark
+from .common import (Benchmark, Estimator_bench,
+                     Predictor_bench, Transformer_bench)
 from .datasets import _china_dataset, _20newsgroups_highdim_dataset
 
 
-class KMeans_bench(Benchmark):
+class KMeans_bench(Benchmark, Estimator_bench,
+                   Predictor_bench, Transformer_bench):
     """
     Benchmarks for KMeans.
     """
@@ -24,55 +26,29 @@ class KMeans_bench(Benchmark):
 
         if Benchmark.data_size == 'large':
             if representation == 'sparse':
-                self.X, _ = _20newsgroups_highdim_dataset(ngrams=(1, 2))
-                self.n_clusters = 20
+                self.X, _, _, _ = _20newsgroups_highdim_dataset(ngrams=(1, 2))
+                n_clusters = 20
             else:
-                self.X = _china_dataset()
-                self.n_clusters = 256
+                self.X, _ = _china_dataset()
+                n_clusters = 256
         else:
             if representation == 'sparse':
-                self.X, _ = _20newsgroups_highdim_dataset(n_samples=5000)
-                self.n_clusters = 20
+                self.X, _, _, _ = _20newsgroups_highdim_dataset(n_samples=5000)
+                n_clusters = 20
             else:
-                self.X = _china_dataset(n_samples=200000)
-                self.n_clusters = 64
+                self.X, _ = _china_dataset(n_samples=200000)
+                n_clusters = 64
 
-        self.x_squared_norms = row_norms(self.X, squared=True)
+        self.estimator = KMeans(n_clusters=n_clusters,
+                                algorithm=algorithm,
+                                n_init=1,
+                                init='random',
+                                max_iter=50,
+                                tol=1e-16,
+                                n_jobs=n_jobs,
+                                random_state=0)
 
-        self.kmeans_params = {'n_clusters': self.n_clusters,
-                              'algorithm': algorithm,
-                              'n_init': 1,
-                              'n_jobs': n_jobs,
-                              'random_state': 0}
-
-    def time_iterations(self, *args):
-        kmeans = KMeans(init='random', max_iter=50, tol=0,
-                        **self.kmeans_params)
-        kmeans.fit(self.X)
-
-    def peakmem_iterations(self, *args):
-        kmeans = KMeans(init='random', max_iter=50, tol=0,
-                        **self.kmeans_params)
-        kmeans.fit(self.X)
-
-    def track_iterations(self, *args):
-        kmeans = KMeans(init='random', max_iter=50, tol=0,
-                        **self.kmeans_params)
-        kmeans.fit(self.X)
-        return kmeans.n_iter_
-
-    def time_convergence(self, *args):
-        kmeans = KMeans(**self.kmeans_params)
-        kmeans.fit(self.X)
-
-    def peakmem_convergence(self, *args):
-        kmeans = KMeans(**self.kmeans_params)
-        kmeans.fit(self.X)
-
-    def track_convergence(self, *args):
-        kmeans = KMeans(**self.kmeans_params)
-        kmeans.fit(self.X)
-        return kmeans.n_iter_
+        self.estimator.fit(self.X)
 
 
 class KMeansPlusPlus_bench(Benchmark):
@@ -81,16 +57,14 @@ class KMeansPlusPlus_bench(Benchmark):
     """
 
     def setup(self):
-        self.X = _china_dataset()
+        self.X, _ = _china_dataset()
         self.n_clusters = 256
         self.x_squared_norms = row_norms(self.X, squared=True)
 
     def time_kmeansplusplus(self):
-        rng = np.random.RandomState(0)
         _k_init(self.X, self.n_clusters, self.x_squared_norms,
-                random_state=rng)
+                random_state=np.random.RandomState(0))
 
     def peakmem_kmeansplusplus(self):
-        rng = np.random.RandomState(0)
         _k_init(self.X, self.n_clusters, self.x_squared_norms,
-                random_state=rng)
+                random_state=np.random.RandomState(0))

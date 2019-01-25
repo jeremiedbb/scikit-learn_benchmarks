@@ -1,10 +1,10 @@
 from sklearn.manifold import TSNE
 
-from .common import Benchmark
+from .common import Benchmark, Estimator_bench
 from .datasets import _digits_dataset
 
 
-class TSNE_bench(Benchmark):
+class TSNE_bench(Benchmark, Estimator_bench):
     """
     Benchmarks for t-SNE.
     """

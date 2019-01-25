@@ -96,7 +96,7 @@ def _synth_regression_dataset(n_samples=1000, n_features=10000,
 def _synth_classification_dataset(n_samples=1000, n_features=10000,
                                   n_classes=2, dtype=np.float32):
     X, y = make_classification(n_samples=n_samples, n_features=n_features,
-                               n_classes=n_classes, random_state=42,
+                               n_classes=n_classes, random_state=0,
                                n_informative=n_features, n_redundant=0)
     X = X.astype(dtype, copy=False)
     X = StandardScaler().fit_transform(X)
@@ -108,10 +108,6 @@ def _synth_classification_dataset(n_samples=1000, n_features=10000,
 
 @M.cache
 def _olivetti_faces_dataset():
-    """
-    Using example from documentation
-    http://scikit-learn.org/stable/auto_examples/decomposition/plot_faces_decomposition.html#sphx-glr-auto-examples-decomposition-plot-faces-decomposition-py
-    """
     dataset = fetch_olivetti_faces(shuffle=True, random_state=42)
     faces = dataset.data
     n_samples, n_features = faces.shape

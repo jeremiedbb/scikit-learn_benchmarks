@@ -31,8 +31,8 @@ class PairwiseDistances_bench(Benchmark):
             else:
                 n_samples = 12000
 
-        self.X = _random_dataset(n_samples=n_samples,
-                                 representation=representation)
+        self.X, _ = _random_dataset(n_samples=n_samples,
+                                    representation=representation)
 
         self.pdist_params = {'metric': metric,
                              'n_jobs': n_jobs}

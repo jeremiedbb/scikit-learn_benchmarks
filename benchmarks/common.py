@@ -45,6 +45,8 @@ class Benchmark:
         self.X = None
         self.y = None
 
+
+class Estimator_bench:
     def setup(self):
         raise NotImplementedError
 
@@ -55,7 +57,7 @@ class Benchmark:
         self.estimator.fit(self.X, self.y)
 
 
-class Predictor:
+class Predictor_bench:
     def setup(self):
         raise NotImplementedError
 
@@ -66,7 +68,7 @@ class Predictor:
         self.estimator.predict(self.X)
 
 
-class Transformer:
+class Transformer_bench:
     def setup(self):
         raise NotImplementedError
 

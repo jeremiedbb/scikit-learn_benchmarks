@@ -1,10 +1,10 @@
 from sklearn.neighbors import KNeighborsClassifier
 
-from .common import Benchmark
+from .common import Benchmark, Estimator_bench, Predictor_bench
 from .datasets import _20newsgroups_lowdim_dataset
 
 
-class KNeighborsClassifier_bench(Benchmark):
+class KNeighborsClassifier_bench(Benchmark, Estimator_bench, Predictor_bench):
     """
     Benchmarks for KNeighborsClassifier.
     """
@@ -22,17 +22,9 @@ class KNeighborsClassifier_bench(Benchmark):
         else:
             nc = 10 if dimension == 'low' else 50
 
-        self.X, self.y = _20newsgroups_lowdim_dataset(n_components=nc)
+        self.X, _, self.y, _ = _20newsgroups_lowdim_dataset(n_components=nc)
 
-        self.knn_params = {'algorithm': algorithm,
-                           'n_jobs': n_jobs}
+        self.estimator = KNeighborsClassifier(algorithm=algorithm,
+                                              n_jobs=n_jobs)
 
-    def time_fit_predict(self, *args):
-        knn = KNeighborsClassifier(**self.knn_params)
-        knn.fit(self.X, self.y)
-        knn.predict(self.X)
-
-    def peakmem_fit_predict(self, *args):
-        knn = KNeighborsClassifier(**self.knn_params)
-        knn.fit(self.X, self.y)
-        knn.predict(self.X)
+        self.estimator.fit(self.X, self.y)
