@@ -1,10 +1,11 @@
 from sklearn.neighbors import KNeighborsClassifier
 
-from .common import Benchmark, Estimator_bench, Predictor_bench
+from .common import Benchmark, Estimator, Predictor
 from .datasets import _20newsgroups_lowdim_dataset
+from .utils import make_gen_classif_scorers
 
 
-class KNeighborsClassifier_bench(Benchmark, Estimator_bench, Predictor_bench):
+class KNeighborsClassifier_bench(Benchmark, Estimator, Predictor):
     """
     Benchmarks for KNeighborsClassifier.
     """
@@ -14,17 +15,23 @@ class KNeighborsClassifier_bench(Benchmark, Estimator_bench, Predictor_bench):
               ['low', 'high'],
               Benchmark.n_jobs_vals)
 
-    def setup(self, *params):
+    def setup_cache(self):
+        super().setup_cache()
+
+    def setup_cache_(self, params):
         algorithm, dimension, n_jobs = params
 
         if Benchmark.data_size == 'large':
-            nc = 40 if dimension == 'low' else 200
+            n_components = 40 if dimension == 'low' else 200
         else:
-            nc = 10 if dimension == 'low' else 50
+            n_components = 10 if dimension == 'low' else 50
 
-        self.X, _, self.y, _ = _20newsgroups_lowdim_dataset(n_components=nc)
+        data = _20newsgroups_lowdim_dataset(n_components=n_components)
 
-        self.estimator = KNeighborsClassifier(algorithm=algorithm,
-                                              n_jobs=n_jobs)
+        estimator = KNeighborsClassifier(algorithm=algorithm,
+                                         n_jobs=n_jobs)
 
-        self.estimator.fit(self.X, self.y)
+        return data, estimator
+
+    def make_scorers(self):
+        make_gen_classif_scorers(self)

@@ -1,8 +1,9 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV, cross_val_score
 
-from .common import Benchmark, Estimator_bench
+from .common import Benchmark, Estimator, Predictor
 from .datasets import _synth_classification_dataset
+from .utils import make_gen_classif_scorers
 
 
 class CrossValidation_bench(Benchmark):
@@ -18,8 +19,8 @@ class CrossValidation_bench(Benchmark):
     def setup(self, *params):
         n_jobs, = params
 
-        self.X, _, self.y, _ = _synth_classification_dataset(n_samples=50000,
-                                                             n_features=100)
+        data = _synth_classification_dataset(n_samples=50000, n_features=100)
+        self.X, self.X_val, self.y, self.y_val = data
 
         self.clf = RandomForestClassifier(n_estimators=50,
                                           max_depth=10,
@@ -33,11 +34,15 @@ class CrossValidation_bench(Benchmark):
     def time_crossval(self, *args):
         cross_val_score(self.clf, self.X, self.y, **self.cv_params)
 
-    def peakmem_fit(self, *args):
+    def peakmem_crossval(self, *args):
         cross_val_score(self.clf, self.X, self.y, **self.cv_params)
 
+    def track_crossval(self, *args):
+        return float(cross_val_score(self.clf, self.X,
+                                     self.y, **self.cv_params).mean())
 
-class GridSearch_bench(Benchmark, Estimator_bench):
+
+class GridSearch_bench(Benchmark, Estimator, Predictor):
     """
     Benchmarks for GridSearch.
     """
@@ -47,11 +52,13 @@ class GridSearch_bench(Benchmark, Estimator_bench):
     param_names = ['n_jobs']
     params = (Benchmark.n_jobs_vals,)
 
-    def setup(self, *params):
+    def setup_cache(self):
+        super().setup_cache()
+
+    def setup_cache_(self, params):
         n_jobs, = params
 
-        self.X, _, self.y, _ = _synth_classification_dataset(n_samples=10000,
-                                                             n_features=100)
+        data = _synth_classification_dataset(n_samples=10000, n_features=100)
 
         clf = RandomForestClassifier(random_state=0)
 
@@ -68,6 +75,9 @@ class GridSearch_bench(Benchmark, Estimator_bench):
                       'max_depth': max_depth_list,
                       'max_features': max_features_list}
 
-        self.estimator = GridSearchCV(clf, param_grid, n_jobs=n_jobs, cv=4)
+        estimator = GridSearchCV(clf, param_grid, n_jobs=n_jobs, cv=4)
 
-        self.estimator.fit(self.X, self.y)
+        return data, estimator
+
+    def make_scorers(self):
+        make_gen_classif_scorers(self)

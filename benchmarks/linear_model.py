@@ -1,12 +1,15 @@
 from sklearn.linear_model import (LogisticRegression, Ridge, ElasticNet, Lasso,
                                   LinearRegression, SGDRegressor)
 
-from .common import Benchmark, Estimator_bench, Predictor_bench
+from .common import Benchmark, Estimator, Predictor
 from .datasets import (_20newsgroups_highdim_dataset,
-                       _20newsgroups_lowdim_dataset, _synth_regression_dataset)
+                       _20newsgroups_lowdim_dataset,
+                       _synth_regression_dataset,
+                       _synth_regression_sparse_dataset)
+from .utils import make_gen_classif_scorers, make_gen_reg_scorers
 
 
-class LogisticRegression_bench(Benchmark, Estimator_bench, Predictor_bench):
+class LogisticRegression_bench(Benchmark, Estimator, Predictor):
     """
     Benchmarks for LogisticRegression.
     """
@@ -14,7 +17,10 @@ class LogisticRegression_bench(Benchmark, Estimator_bench, Predictor_bench):
     param_names = ['representation', 'solver', 'n_jobs']
     params = (['dense', 'sparse'], ['lbfgs', 'saga'], Benchmark.n_jobs_vals)
 
-    def setup(self, *params):
+    def setup_cache(self):
+        super().setup_cache()
+
+    def setup_cache_(self, params):
         representation, solver, n_jobs = params
 
         penalty = 'l2' if solver == 'lbfgs' else 'l1'
@@ -29,19 +35,21 @@ class LogisticRegression_bench(Benchmark, Estimator_bench, Predictor_bench):
                 data = _20newsgroups_highdim_dataset(n_samples=2500)
             else:
                 data = _20newsgroups_lowdim_dataset()
-        self.X, _, self.y, _ = data
 
-        self.estimator = LogisticRegression(solver=solver,
-                                            penalty=penalty,
-                                            multi_class='multinomial',
-                                            tol=0.01,
-                                            n_jobs=n_jobs,
-                                            random_state=0)
+        estimator = LogisticRegression(solver=solver,
+                                       penalty=penalty,
+                                       multi_class='multinomial',
+                                       tol=0.01,
+                                       n_jobs=n_jobs,
+                                       random_state=0)
 
-        self.estimator.fit(self.X, self.y)
+        return data, estimator
+
+    def make_scorers(self):
+        make_gen_classif_scorers(self)
 
 
-class Ridge_bench(Benchmark, Estimator_bench, Predictor_bench):
+class Ridge_bench(Benchmark, Estimator, Predictor):
     """
     Benchmarks for Ridge.
     """
@@ -49,23 +57,30 @@ class Ridge_bench(Benchmark, Estimator_bench, Predictor_bench):
     param_names = ['representation']
     params = (['dense', 'sparse'],)
 
-    def setup(self, *params):
+    def setup_cache(self):
+        super().setup_cache()
+
+    def setup_cache_(self, params):
         representation, = params
 
         if representation == 'dense':
-            data = _synth_regression_dataset(n_samples=100000, n_features=500)
+            data = _synth_regression_dataset(n_samples=100000, n_features=100)
         else:
-            data = _20newsgroups_highdim_dataset(ngrams=(1, 3))
-        self.X, _, self.y, _ = data
+            data = _synth_regression_sparse_dataset(n_samples=100000,
+                                                    n_features=10000,
+                                                    density=0.005)
 
-        self.estimator = Ridge(solver='saga',
-                               fit_intercept=False,
-                               random_state=0)
+        estimator = Ridge(solver='sag',
+                          fit_intercept=True,
+                          random_state=0)
 
-        self.estimator.fit(self.X, self.y)
+        return data, estimator
+
+    def make_scorers(self):
+        make_gen_reg_scorers(self)
 
 
-class LinearRegression_bench(Benchmark, Estimator_bench, Predictor_bench):
+class LinearRegression_bench(Benchmark, Estimator, Predictor):
     """
     Benchmarks for Linear Reagression.
     """
@@ -73,21 +88,28 @@ class LinearRegression_bench(Benchmark, Estimator_bench, Predictor_bench):
     param_names = ['representation']
     params = (['dense', 'sparse'],)
 
-    def setup(self, *params):
+    def setup_cache(self):
+        super().setup_cache()
+
+    def setup_cache_(self, params):
         representation, = params
 
         if representation == 'dense':
             data = _synth_regression_dataset(n_samples=1000000, n_features=100)
         else:
-            data = _20newsgroups_highdim_dataset(n_samples=5000)
-        self.X, _, self.y, _ = data
+            data = _synth_regression_sparse_dataset(n_samples=10000000,
+                                                    n_features=10000,
+                                                    density=0.0001)
 
-        self.estimator = LinearRegression()
+        estimator = LinearRegression()
 
-        self.estimator.fit(self.X, self.y)
+        return data, estimator
+
+    def make_scorers(self):
+        make_gen_reg_scorers(self)
 
 
-class SGDRegressor_bench(Benchmark, Estimator_bench, Predictor_bench):
+class SGDRegressor_bench(Benchmark, Estimator, Predictor):
     """
     Benchmark for SGD
     """
@@ -95,22 +117,30 @@ class SGDRegressor_bench(Benchmark, Estimator_bench, Predictor_bench):
     param_names = ['representation']
     params = (['dense', 'sparse'],)
 
-    def setup(self, *params):
+    def setup_cache(self):
+        super().setup_cache()
+
+    def setup_cache_(self, params):
         representation, = params
 
         if representation == 'dense':
-            data = _synth_regression_dataset(n_samples=100000, n_features=100)
+            data = _synth_regression_dataset(n_samples=100000, n_features=200)
         else:
-            data = _20newsgroups_highdim_dataset(n_samples=5000)
-        self.X, _, self.y, _ = data
+            data = _synth_regression_sparse_dataset(n_samples=100000,
+                                                    n_features=1000,
+                                                    density=0.01)
 
-        self.estimator = SGDRegressor(max_iter=1000,
-                                      tol=1e-16)
+        estimator = SGDRegressor(max_iter=1000,
+                                 tol=1e-16,
+                                 random_state=0)
 
-        self.estimator.fit(self.X, self.y)
+        return data, estimator
+
+    def make_scorers(self):
+        make_gen_reg_scorers(self)
 
 
-class ElasticNet_bench(Benchmark, Estimator_bench, Predictor_bench):
+class ElasticNet_bench(Benchmark, Estimator, Predictor):
     """
     Benchmarks for ElasticNet.
     """
@@ -118,22 +148,39 @@ class ElasticNet_bench(Benchmark, Estimator_bench, Predictor_bench):
     param_names = ['representation', 'precompute']
     params = (['dense', 'sparse'], [True, False])
 
-    def setup(self, *params):
+    def setup_cache(self):
+        super().setup_cache()
+
+    def setup_cache_(self, params):
         representation, precompute = params
+
+        if representation == 'sparse' and precompute is False:
+            return
 
         if representation == 'dense':
             data = _synth_regression_dataset(n_samples=1000000, n_features=100)
         else:
-            data = _20newsgroups_highdim_dataset()
-        self.X, _, self.y, _ = data
+            data = _synth_regression_sparse_dataset(n_samples=50000,
+                                                    n_features=5000,
+                                                    density=0.01)
 
-        self.estimator = ElasticNet(precompute=precompute,
-                                    random_state=0)
+        estimator = ElasticNet(precompute=precompute,
+                               alpha=0.001,
+                               random_state=0)
 
-        self.estimator.fit(self.X, self.y)
+        return data, estimator
+
+    def setup_(self, params):
+        representation, precompute = params
+
+        if representation == 'sparse' and precompute is False:
+            raise NotImplementedError
+
+    def make_scorers(self):
+        make_gen_reg_scorers(self)
 
 
-class Lasso_bench(Benchmark, Estimator_bench, Predictor_bench):
+class Lasso_bench(Benchmark, Estimator, Predictor):
     """
     Benchmarks for Lasso.
     """
@@ -141,18 +188,33 @@ class Lasso_bench(Benchmark, Estimator_bench, Predictor_bench):
     param_names = ['representation', 'precompute']
     params = (['dense', 'sparse'], [True, False])
 
-    def setup(self, *params):
+    def setup_cache(self):
+        super().setup_cache()
+
+    def setup_cache_(self, params):
         representation, precompute = params
+
+        if representation == 'sparse' and precompute is False:
+            return
 
         if representation == 'dense':
             data = _synth_regression_dataset(n_samples=1000000, n_features=100)
         else:
-            data = _20newsgroups_highdim_dataset()
-        self.X, _, self.y, _ = data
+            data = _synth_regression_sparse_dataset(n_samples=50000,
+                                                    n_features=5000,
+                                                    density=0.01)
 
-        self.lasso_params = {'precompute': precompute,
-                             'random_state': 0}
-        self.estimator = Lasso(precompute=precompute,
-                               random_state=0)
+        estimator = Lasso(precompute=precompute,
+                          alpha=0.001,
+                          random_state=0)
 
-        self.estimator.fit(self.X, self.y)
+        return data, estimator
+
+    def setup_(self, params):
+        representation, precompute = params
+
+        if representation == 'sparse' and precompute is False:
+            raise NotImplementedError
+
+    def make_scorers(self):
+        make_gen_reg_scorers(self)
