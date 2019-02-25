@@ -6,5 +6,4 @@ env/
 html/
 results/
 scikit-learn/
-cache/
 joblib/
