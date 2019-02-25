@@ -1,7 +1,10 @@
 .vscode
+.pytest_cache
 *__pycache__*
 *.swp
 env/
 html/
 results/
 scikit-learn/
+cache/
+joblib/

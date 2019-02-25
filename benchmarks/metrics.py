@@ -8,29 +8,32 @@ class PairwiseDistances_bench(Benchmark):
     """
     Benchmarks for pairwise distances.
     """
-    # params = (representation, metric)
-    param_names = ['params'] + Benchmark.param_names
-    params = ([('dense', 'cosine'),
-               ('sparse', 'cosine'),
-               ('dense', 'euclidean'),
-               ('sparse', 'euclidean'),
-               ('dense', 'manhattan'),
-               ('sparse', 'manhattan'),
-               ('dense', 'correlation')],) + Benchmark.params
 
-    def setup(self, params, *common):
-        representation = params[0]
-        metric = params[1]
+    param_names = ['representation', 'metric', 'n_jobs']
+    params = (['dense', 'sparse'],
+              ['cosine', 'euclidean', 'manhattan', 'correlation'],
+              Benchmark.n_jobs_vals)
 
-        n_jobs = common[0]
+    def setup(self, *params):
+        representation, metric, n_jobs = params
 
-        if metric in ('manhattan', 'correlation'):
-            n_samples = 2000
+        if representation == 'sparse' and metric == 'correlation':
+            raise NotImplementedError
+
+        if Benchmark.data_size == 'large':
+            if metric in ('manhattan', 'correlation'):
+                n_samples = 8000
+            else:
+                n_samples = 24000
         else:
-            n_samples = 10000
+            if metric in ('manhattan', 'correlation'):
+                n_samples = 4000
+            else:
+                n_samples = 12000
 
-        self.X = _random_dataset(n_samples=n_samples,
-                                 representation=representation)
+        data = _random_dataset(n_samples=n_samples,
+                               representation=representation)
+        self.X, self.X_val, self.y, self.y_val = data
 
         self.pdist_params = {'metric': metric,
                              'n_jobs': n_jobs}

@@ -1,93 +1,91 @@
 from sklearn.decomposition import (PCA, DictionaryLearning,
                                    MiniBatchDictionaryLearning)
 
-from .common import Benchmark
-from .datasets import olivetti_faces_dataset, _mnist_dataset
+from .common import Benchmark, Estimator, Transformer
+from .datasets import _olivetti_faces_dataset, _mnist_dataset
+from .utils import make_pca_scorers, make_dict_learning_scorers
 
 
-class PCA_bench(Benchmark):
+class PCA_bench(Benchmark, Estimator, Transformer):
     """
     Benchmarks for PCA.
     """
 
-    # params = (svd_solver)
-    param_names = ['params']
-    params = ([('full',),
-               ('arpack',),
-               ('randomized',)],)
+    param_names = ['svd_solver']
+    params = (['full', 'arpack', 'randomized'],)
 
-    def setup(self, params):
-        svd_solver = params[0]
+    def setup_cache(self):
+        super().setup_cache()
 
-        self.X, _ = _mnist_dataset()
+    def setup_cache_(self, params):
+        svd_solver, = params
 
-        self.pca_params = {'n_components': 8,
-                           'svd_solver': svd_solver,
-                           'random_state': 0}
+        data = _mnist_dataset()
 
-    def time_fit(self, *args):
-        pca = PCA(**self.pca_params)
-        pca.fit(self.X)
+        estimator = PCA(n_components=32,
+                        svd_solver=svd_solver,
+                        random_state=0)
 
-    def peakmem_fit(self, *args):
-        pca = PCA(**self.pca_params)
-        pca.fit(self.X)
+        return data, estimator
+
+    def make_scorers(self):
+        make_pca_scorers(self)
 
 
-class DictionaryLearning_bench(Benchmark):
+class DictionaryLearning_bench(Benchmark, Estimator, Transformer):
     """
     Benchmarks for DictionaryLearning.
     """
 
-    # params = (fit_algorithm)
-    param_names = ['params'] + Benchmark.param_names
-    params = ([('lars',),
-               ('cd',)],) + Benchmark.params
+    param_names = ['fit_algorithm', 'n_jobs']
+    params = (['lars', 'cd'], Benchmark.n_jobs_vals)
 
-    def setup(self, params, *common):
-        self.data = olivetti_faces_dataset()
-        fit_algorithm = params[0]
-        n_jobs = common[0]
-        self.dl_params = {'n_components': 15,
-                          'fit_algorithm': fit_algorithm,
-                          'alpha': 0.1,
-                          'tol': 1e-16,
-                          'random_state': 42,
-                          'n_jobs': n_jobs}
+    def setup_cache(self):
+        super().setup_cache()
 
-    def time_fit(self, params):
-        estimator = DictionaryLearning(**self.dl_params)
-        estimator.fit(self.data)
+    def setup_cache_(self, params):
+        fit_algorithm, n_jobs = params
 
-    def peakmem_fit(self, params):
-        estimator = DictionaryLearning(**self.dl_params)
-        estimator.fit(self.data)
+        data = _olivetti_faces_dataset()
+
+        estimator = DictionaryLearning(n_components=15,
+                                       fit_algorithm=fit_algorithm,
+                                       alpha=0.1,
+                                       max_iter=20,
+                                       tol=1e-16,
+                                       random_state=0,
+                                       n_jobs=n_jobs)
+
+        return data, estimator
+
+    def make_scorers(self):
+        make_dict_learning_scorers(self)
 
 
-class MiniBatchDictionaryLearning_bench(Benchmark):
+class MiniBatchDictionaryLearning_bench(Benchmark, Estimator, Transformer):
     """
     Benchmarks for MiniBatchDictionaryLearning
     """
-    # params = (fit_algorithm)
-    param_names = ['params'] + Benchmark.param_names
-    params = ([('lars',),
-               ('cd',)],) + Benchmark.params
 
-    def setup(self, params, *common):
-        self.data = olivetti_faces_dataset()
-        fit_algorithm = params[0]
-        n_jobs = common[0]
-        self.dl_params = {'n_components': 15,
-                          'fit_algorithm': fit_algorithm,
-                          'alpha': 0.1,
-                          'tol': 1e-16,
-                          'random_state': 42,
-                          'n_jobs': n_jobs}
+    param_names = ['fit_algorithm', 'n_jobs']
+    params = (['lars', 'cd'], Benchmark.n_jobs_vals)
 
-    def time_fit(self, params):
-        estimator = MiniBatchDictionaryLearning(**self.dl_params)
-        estimator.fit(self.data)
+    def setup_cache(self):
+        super().setup_cache()
 
-    def peakmem_fit(self, params):
-        estimator = MiniBatchDictionaryLearning(**self.dl_params)
-        estimator.fit(self.data)
+    def setup_cache_(self, params):
+        fit_algorithm, n_jobs = params
+
+        data = _olivetti_faces_dataset()
+
+        estimator = MiniBatchDictionaryLearning(n_components=15,
+                                                fit_algorithm=fit_algorithm,
+                                                alpha=0.1,
+                                                batch_size=3,
+                                                random_state=0,
+                                                n_jobs=n_jobs)
+
+        return data, estimator
+
+    def make_scorers(self):
+        make_dict_learning_scorers(self)

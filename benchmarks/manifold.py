@@ -1,31 +1,31 @@
 from sklearn.manifold import TSNE
 
-from .common import Benchmark
+from .common import Benchmark, Estimator
 from .datasets import _digits_dataset
 
 
-class TSNE_bench(Benchmark):
+class TSNE_bench(Benchmark, Estimator):
     """
     Benchmarks for t-SNE.
     """
-    # params = (method)
-    param_names = []
-    params = ()
 
-    def setup(self):
-        self.X, _ = _digits_dataset()
+    param_names = ['method']
+    params = (['exact', 'barnes_hut'],)
 
-        self.tsne_params = {'random_state': 0}
+    def setup_cache(self):
+        super().setup_cache()
 
-    def time_fit(self, *args):
-        tsne = TSNE(**self.tsne_params)
-        tsne.fit(self.X)
+    def setup_cache_(self, params):
+        method, = params
 
-    def peakmem_fit(self, *args):
-        tsne = TSNE(**self.tsne_params)
-        tsne.fit(self.X)
+        n_samples = 500 if method == 'exact' else None
 
-    def track_fit(self, *args):
-        tsne = TSNE(**self.tsne_params)
-        tsne.fit(self.X)
-        return tsne.n_iter_
+        data = _digits_dataset(n_samples=n_samples)
+
+        estimator = TSNE(random_state=0, method=method)
+
+        return data, estimator
+
+    def make_scorers(self):
+        self.train_scorer = lambda _, __: self.estimator.kl_divergence_
+        self.test_scorer = lambda _, __: self.estimator.kl_divergence_

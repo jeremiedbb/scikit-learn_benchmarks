@@ -4,89 +4,96 @@ from sklearn.cluster import KMeans
 from sklearn.cluster.k_means_ import _k_init
 from sklearn.utils.extmath import row_norms
 
-from .common import Benchmark
+from .common import Benchmark, Estimator, Predictor, Transformer
 from .datasets import _china_dataset, _20newsgroups_highdim_dataset
+from .utils import neg_mean_inertia
 
 
-class KMeans_bench(Benchmark):
+class KMeans_bench(Benchmark, Estimator, Predictor, Transformer):
     """
     Benchmarks for KMeans.
     """
-    # params = (representation, algorithm)
-    param_names = ['params'] + Benchmark.param_names
-    params = ([('dense', 'full'),
-               ('dense', 'elkan'),
-               ('sparse', 'full')],) + Benchmark.params
 
-    def setup(self, params, *common):
-        representation = params[0]
-        algo = params[1]
+    param_names = ['representation', 'algorithm', 'n_jobs']
+    params = (['dense', 'sparse'], ['full', 'elkan'], Benchmark.n_jobs_vals)
 
-        n_jobs = common[0]
+    def setup_cache(self):
+        super().setup_cache()
 
-        if representation is 'sparse':
-            self.X, _ = _20newsgroups_highdim_dataset()
-            self.n_clusters = 20
+    def setup_cache_(self, params):
+        representation, algorithm, n_jobs = params
+
+        if representation == 'sparse' and algorithm == 'elkan':
+            return
+
+        if Benchmark.data_size == 'large':
+            if representation == 'sparse':
+                data = _20newsgroups_highdim_dataset(ngrams=(1, 2))
+                n_clusters = 20
+            else:
+                data = _china_dataset()
+                n_clusters = 256
         else:
-            self.X = _china_dataset()
-            self.n_clusters = 64
+            if representation == 'sparse':
+                data = _20newsgroups_highdim_dataset(n_samples=5000)
+                n_clusters = 20
+            else:
+                data = _china_dataset(n_samples=200000)
+                n_clusters = 64
 
-        self.x_squared_norms = row_norms(self.X, squared=True)
+        estimator = KMeans(n_clusters=n_clusters,
+                           algorithm=algorithm,
+                           n_init=1,
+                           init='random',
+                           max_iter=50,
+                           tol=1e-16,
+                           n_jobs=n_jobs,
+                           random_state=0)
 
-        self.kmeans_params = {'n_clusters': self.n_clusters,
-                              'algorithm': algo,
-                              'n_init': 1,
-                              'n_jobs': n_jobs,
-                              'random_state': 0}
+        return data, estimator
 
-    def time_iterations(self, *args):
-        kmeans = KMeans(init='random', max_iter=10, tol=0,
-                        **self.kmeans_params)
-        kmeans.fit(self.X)
+    def setup_(self, params):
+        representation, algorithm, n_jobs = params
 
-    def peakmem_iterations(self, *args):
-        kmeans = KMeans(init='random', max_iter=10, tol=0,
-                        **self.kmeans_params)
-        kmeans.fit(self.X)
+        if representation == 'sparse' and algorithm == 'elkan':
+            raise NotImplementedError
 
-    def track_iterations(self, *args):
-        kmeans = KMeans(init='random', max_iter=10, tol=0,
-                        **self.kmeans_params)
-        kmeans.fit(self.X)
-        return kmeans.n_iter_
-
-    def time_convergence(self, *args):
-        kmeans = KMeans(**self.kmeans_params)
-        kmeans.fit(self.X)
-
-    def peakmem_convergence(self, *args):
-        kmeans = KMeans(**self.kmeans_params)
-        kmeans.fit(self.X)
-
-    def track_convergence(self, *args):
-        kmeans = KMeans(**self.kmeans_params)
-        kmeans.fit(self.X)
-        return kmeans.n_iter_
+    def make_scorers(self):
+        self.train_scorer = (
+            lambda _, __: neg_mean_inertia(self.X,
+                                           self.estimator.predict(self.X),
+                                           self.estimator.cluster_centers_))
+        self.test_scorer = (
+            lambda _, __: neg_mean_inertia(self.X_val,
+                                           self.estimator.predict(self.X_val),
+                                           self.estimator.cluster_centers_))
 
 
 class KMeansPlusPlus_bench(Benchmark):
     """
     Benchmarks for k-means++ init.
     """
-    param_names = []
-    params = []
 
-    def setup(self):
-        self.X = _china_dataset()
-        self.n_clusters = 64
+    param_names = ['representation']
+    params = (['dense', 'sparse'],)
+
+    def setup(self, *params):
+        representation, = params
+
+        if representation == 'sparse':
+            data = _20newsgroups_highdim_dataset(ngrams=(1, 2))
+            self.n_clusters = 20
+        else:
+            data = _china_dataset()
+            self.n_clusters = 256
+        self.X, self.X_val, self.y, self.y_val = data
+
         self.x_squared_norms = row_norms(self.X, squared=True)
 
-    def time_kmeansplusplus(self):
-        rng = np.random.RandomState(0)
+    def time_kmeansplusplus(self, *args):
         _k_init(self.X, self.n_clusters, self.x_squared_norms,
-                random_state=rng)
+                random_state=np.random.RandomState(0))
 
-    def peakmem_kmeansplusplus(self):
-        rng = np.random.RandomState(0)
+    def peakmem_kmeansplusplus(self, *args):
         _k_init(self.X, self.n_clusters, self.x_squared_norms,
-                random_state=rng)
+                random_state=np.random.RandomState(0))

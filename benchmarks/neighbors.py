@@ -1,42 +1,37 @@
 from sklearn.neighbors import KNeighborsClassifier
 
-from .common import Benchmark
+from .common import Benchmark, Estimator, Predictor
 from .datasets import _20newsgroups_lowdim_dataset
+from .utils import make_gen_classif_scorers
 
 
-class KNeighborsClassifier_bench(Benchmark):
+class KNeighborsClassifier_bench(Benchmark, Estimator, Predictor):
     """
     Benchmarks for KNeighborsClassifier.
     """
-    # params = (algorithm, wideness)
-    param_names = ['params'] + Benchmark.param_names
-    params = ([('brute', 'high_dim'),
-               ('brute', 'low_dim'),
-               ('kd_tree', 'high_dim'),
-               ('kd_tree', 'low_dim'),
-               ('ball_tree', 'high_dim'),
-               ('ball_tree', 'low_dim')],) + Benchmark.params
 
-    def setup(self, params, *common):
-        algo = params[0]
-        wideness = params[1]
+    param_names = ['algorithm', 'dimension', 'n_jobs']
+    params = (['brute', 'kd_tree', 'ball_tree'],
+              ['low', 'high'],
+              Benchmark.n_jobs_vals)
 
-        n_jobs = common[0]
+    def setup_cache(self):
+        super().setup_cache()
 
-        if wideness is 'high_dim':
-            self.X, self.y = _20newsgroups_lowdim_dataset(n_components=50)
+    def setup_cache_(self, params):
+        algorithm, dimension, n_jobs = params
+
+        if Benchmark.data_size == 'large':
+            n_components = 40 if dimension == 'low' else 200
         else:
-            self.X, self.y = _20newsgroups_lowdim_dataset(n_components=10)
+            n_components = 10 if dimension == 'low' else 50
 
-        self.knn_params = {'algorithm': algo,
-                           'n_jobs': n_jobs}
+        data = _20newsgroups_lowdim_dataset(n_components=n_components)
 
-    def time_fit_predict(self, *args):
-        knn = KNeighborsClassifier(**self.knn_params)
-        knn.fit(self.X, self.y)
-        knn.predict(self.X)
+        estimator = KNeighborsClassifier(algorithm=algorithm,
+                                         n_jobs=n_jobs)
 
-    def peakmem_fit_predict(self, *args):
-        knn = KNeighborsClassifier(**self.knn_params)
-        knn.fit(self.X, self.y)
-        knn.predict(self.X)
+        return data, estimator
+
+    def make_scorers(self):
+        make_gen_classif_scorers(self)
