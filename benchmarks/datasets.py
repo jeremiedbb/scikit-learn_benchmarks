@@ -29,10 +29,9 @@ def _china_dataset(n_samples=None, dtype=np.float32):
 @M.cache
 def _20newsgroups_highdim_dataset(n_samples=None, ngrams=(1, 1),
                                   dtype=np.float32):
-    newsgroups = fetch_20newsgroups()
-    vectorizer = TfidfVectorizer(ngram_range=ngrams)
+    newsgroups = fetch_20newsgroups(random_state=0)
+    vectorizer = TfidfVectorizer(ngram_range=ngrams, dtype=dtype)
     X = vectorizer.fit_transform(newsgroups.data[:n_samples])
-    X = X.astype(dtype, copy=False)
     y = newsgroups.target[:n_samples]
 
     X, X_val, y, y_val = train_test_split(X, y, test_size=0.1, random_state=0)
