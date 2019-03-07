@@ -32,20 +32,20 @@ class KMeans_bench(Benchmark, Estimator, Predictor, Transformer):
                 n_clusters = 20
             else:
                 data = _china_dataset()
-                n_clusters = 256
+                n_clusters = 1024
         else:
             if representation == 'sparse':
-                data = _20newsgroups_highdim_dataset(n_samples=5000)
+                data = _20newsgroups_highdim_dataset()
                 n_clusters = 20
             else:
-                data = _china_dataset(n_samples=200000)
-                n_clusters = 64
+                data = _china_dataset()
+                n_clusters = 256
 
         estimator = KMeans(n_clusters=n_clusters,
                            algorithm=algorithm,
                            n_init=1,
                            init='random',
-                           max_iter=50,
+                           max_iter=30,
                            tol=1e-16,
                            n_jobs=n_jobs,
                            random_state=0)
