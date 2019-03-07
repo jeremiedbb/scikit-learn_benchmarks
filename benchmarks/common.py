@@ -61,7 +61,8 @@ def get_data_path(benchmark, params):
 def clear_tmp():
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                         'cache', 'tmp')
-    list(map(os.remove, (os.path.join(path, f) for f in os.listdir(path))))
+    list(map(os.remove, (os.path.join(path, f)
+             for f in os.listdir(path) if f != '.gitignore')))
 
 
 class Benchmark:
