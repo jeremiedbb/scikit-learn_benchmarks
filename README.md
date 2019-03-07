@@ -13,9 +13,11 @@ Special instructions to run the benchmarks with the daal4py patches of scikit-le
 
 * create a conda environment with scikit-learn and daal4py installed.
 * install asv with `pip install git+git://github.com/jeremiedbb/asv.git@commit-label`.
-* edit the `benchmarks/__init__.py` file with these 2 lines:
-  ```python
-  import daal4py.sklearn
-  daal4py.sklearn.patch_sklearn()
-  ```
-* then run `asv run --python=same --commit-label=<chose_a_label>`.
+* to benchmark scikit-learn vanilla, run:
+  `asv run --python=same --commit-label=<label1> -b _bench`.
+* to benchmark scikit-learn with the patches run:
+  `python -m daal4py -m asv run --python=same --commit-label=<label2> -b bench`.
+* then to compare both benchmarks, run:
+  `asv compare label1 label2`
+
+You can configure the benchmarks by editing the `benchmark/config.json`.
