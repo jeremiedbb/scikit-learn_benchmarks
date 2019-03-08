@@ -56,7 +56,7 @@ daal4py.sklearn.patch_sklearn()
 * Then run:
 
 ```
-asv run --python=same --commit-label=daal4py_sklearn -b bench
+asv run --python=same --commit-label=daal4py_sklearn -b _bench
 ```
 
 * Finally to compare both benchmarks, run:
