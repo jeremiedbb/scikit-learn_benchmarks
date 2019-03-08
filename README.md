@@ -22,7 +22,7 @@ cd scikit-learn_benchmarks
 * To run the full benchmark suite (warning: this can take several hours) use the following (see the docs to change the environments config or run only selected benchmarks):
 
 ```
-asv run
+asv run -b _bench
 ```
 
 * To run the benchmarks for a specific model, use the `-b <modelname>` flag, e.g.:
@@ -31,12 +31,14 @@ asv run
 asv run -b KMeans
 ```
 
+* You can configure the benchmarks by editing the `benchmark/config.json` file.
+
 
 * To publish the results in html format, run `asv publish` and `asv preview`
 
 ## Special instructions to run the benchmarks with the [daal4py patches of scikit-learn](https://github.com/IntelPython/daal4py/blob/master/doc/sklearn.rst):
 
-* Create a conda environment with scikit-learn and daal4py installed.
+* Create a conda environment with scikit-learn, joblib, pillow and daal4py installed.
 * Install asv with `pip install git+git://github.com/jeremiedbb/asv.git@commit-label` ([see this PR](https://github.com/airspeed-velocity/asv/pull/794))
 * To benchmark scikit-learn vanilla, run:
 
@@ -44,16 +46,21 @@ asv run -b KMeans
 asv run --python=same --commit-label=vanilla_sklearn -b _bench
 ```
 
-* To benchmark scikit-learn with the patches run:
+* To benchmark scikit-learn with the patches, first edit the `benchmarks/__init__.py` file with:
 
 ```
-python -m daal4py -m asv run --python=same --commit-label=daal4py_sklearn -b bench
+import daal4py.sklearn
+daal4py.sklearn.patch_sklearn()
 ```
 
-* Then to compare both benchmarks, run:
+* Then run:
+
+```
+asv run --python=same --commit-label=daal4py_sklearn -b _bench
+```
+
+* Finally to compare both benchmarks, run:
 
 ```
 asv compare vanilla_sklearn daal4py_sklearn
 ```
-
-You can configure the benchmarks by editing the `benchmark/config.json`.
