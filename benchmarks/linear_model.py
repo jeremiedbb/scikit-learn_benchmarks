@@ -97,9 +97,9 @@ class LinearRegression_bench(Benchmark, Estimator, Predictor):
         if representation == 'dense':
             data = _synth_regression_dataset(n_samples=1000000, n_features=100)
         else:
-            data = _synth_regression_sparse_dataset(n_samples=10000000,
-                                                    n_features=10000,
-                                                    density=0.0001)
+            data = _synth_regression_sparse_dataset(n_samples=10000,
+                                                    n_features=100000,
+                                                    density=0.01)
 
         estimator = LinearRegression()
 
