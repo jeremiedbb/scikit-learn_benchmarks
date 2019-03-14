@@ -31,7 +31,6 @@ asv run
 asv run -b KMeans
 ```
 
-
 * To publish the results in html format, run `asv publish` and `asv preview`
 
 ## Special instructions to run the benchmarks with the [daal4py patches of scikit-learn](https://github.com/IntelPython/daal4py/blob/master/doc/sklearn.rst):
@@ -50,10 +49,26 @@ asv run --python=same --commit-label=vanilla_sklearn -b _bench
 python -m daal4py -m asv run --python=same --commit-label=daal4py_sklearn -b bench
 ```
 
-* Then to compare both benchmarks, run:
+You can configure the benchmarks by editing the `benchmark/config.json`.
+
+## Compare benchmarks
+
+* To get a quick overview of the comparison of 2 benchmarks, run:
+
+```
+asv compare commit_hash_1 commit_hash_2
+```
+
+Commit hashes can be replaced by labels if you run the benchmarks against an existing environment (see above), for instance:
 
 ```
 asv compare vanilla_sklearn daal4py_sklearn
 ```
 
-You can configure the benchmarks by editing the `benchmark/config.json`.
+* To get a csv file of the results run:
+
+```
+python compare.py commit_hash_1 commit_hash_2
+```
+
+Commit hashes can be replaced by labels also.
