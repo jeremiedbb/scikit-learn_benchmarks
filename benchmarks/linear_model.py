@@ -54,27 +54,37 @@ class Ridge_bench(Benchmark, Estimator, Predictor):
     Benchmarks for Ridge.
     """
 
-    param_names = ['representation']
-    params = (['dense', 'sparse'],)
+    param_names = ['representation', 'solver']
+    params = (['dense', 'sparse'],
+              ['auto', 'svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga'])
 
     def setup_cache(self):
         super().setup_cache()
 
     def setup_cache_(self, params):
-        representation, = params
+        representation, solver = params
+
+        if representation == 'sparse' and solver == 'svd':
+            return
 
         if representation == 'dense':
-            data = _synth_regression_dataset(n_samples=100000, n_features=100)
+            data = _synth_regression_dataset(n_samples=500000, n_features=100)
         else:
             data = _synth_regression_sparse_dataset(n_samples=100000,
                                                     n_features=10000,
                                                     density=0.005)
 
-        estimator = Ridge(solver='sag',
-                          fit_intercept=True,
+        estimator = Ridge(solver=solver,
+                          fit_intercept=False,
                           random_state=0)
 
         return data, estimator
+
+    def setup_(self, params):
+        representation, solver = params
+
+        if representation == 'sparse' and solver == 'svd':
+            raise NotImplementedError
 
     def make_scorers(self):
         make_gen_reg_scorers(self)
