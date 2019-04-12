@@ -20,6 +20,8 @@ def find_results(label1, label2):
             with open(f_path, 'r') as result_file:
                 result = json.load(result_file)
             label = result['commit_hash']
+            if label.startswith('label-'):
+                label = label[6:]
 
             if label == label1:
                 result1 = f_path
@@ -27,9 +29,9 @@ def find_results(label1, label2):
                 result2 = f_path
 
     if result1 is None:
-        raise(ValueError, "{} not found".format(label1))
+        raise ValueError( "{} not found".format(label1))
     if result2 is None:
-        raise(ValueError, "{} not found".format(label2))
+        raise ValueError("{} not found".format(label2))
 
     return result1, result2
 
