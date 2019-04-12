@@ -29,7 +29,7 @@ def find_results(label1, label2):
                 result2 = f_path
 
     if result1 is None:
-        raise ValueError( "{} not found".format(label1))
+        raise ValueError("{} not found".format(label1))
     if result2 is None:
         raise ValueError("{} not found".format(label2))
 
