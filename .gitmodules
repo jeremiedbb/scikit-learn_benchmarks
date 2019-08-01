@@ -1,0 +1,3 @@
+[submodule "parallel_benchmarks"]
+	path = parallel_benchmarks
+	url = https://github.com/pierreglaser/sklearn_parallel_benchmarks.git
